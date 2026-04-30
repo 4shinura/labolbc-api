@@ -1,23 +1,21 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller;
 
-use App\Entity\Echantillon;
-use App\Entity\Profil;
+use App\Entity\Proposer;  // Remplace Echantillon
 use App\Entity\Repertorier;
 use App\Entity\Visite;
-use App\Entity\Visiteur;
 use App\Repository\MedicamentRepository;
 use App\Repository\PraticienRepository;
 use App\Repository\RepertorierRepository;
 use App\Repository\VisiteRepository;
 use App\Repository\VisiteurRepository;
+use App\Service\AuthService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -25,6 +23,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class VisiteurController extends AbstractController
 {
     public function __construct(
+        private AuthService $authService,
         private VisiteRepository $visiteRepository,
         private VisiteurRepository $visiteurRepository,
         private PraticienRepository $praticienRepository,
@@ -35,8 +34,12 @@ class VisiteurController extends AbstractController
         private ValidatorInterface $validator
     ) {}
 
-    private function getVisiteurFromProfil(Profil $profil): ?Visiteur
+    private function getVisiteurFromRequest(Request $request): ?\App\Entity\Visiteur
     {
+        $profil = $this->authService->getConnectedProfil($request);
+        if (!$profil || $profil->getUsertype() !== 'visiteur') {
+            return null;
+        }
         return $profil->getVisiteur();
     }
 
@@ -44,14 +47,14 @@ class VisiteurController extends AbstractController
      * Voir ses visites - GET /api/visiteur/visites
      */
     #[Route('/visites', name: 'api_visiteur_visites', methods: ['GET'])]
-    public function getMesVisites(#[CurrentUser] ?Profil $profil): JsonResponse
+    public function getMesVisites(Request $request): JsonResponse
     {
-        if (!$profil || !$profil->getVisiteur()) {
+        $visiteur = $this->getVisiteurFromRequest($request);
+        if (!$visiteur) {
             return $this->json(['error' => 'Non authentifié ou profil visiteur requis'], 401);
         }
 
-        $visites = $this->visiteRepository->findByVisiteur($profil->getVisiteur());
-
+        $visites = $this->visiteRepository->findByVisiteur($visiteur);
         $json = $this->serializer->serialize($visites, 'json', ['groups' => 'visite:read']);
         return new JsonResponse($json, 200, [], true);
     }
@@ -60,14 +63,14 @@ class VisiteurController extends AbstractController
      * Voir un de ses comptes-rendus - GET /api/visiteur/visites/{id}
      */
     #[Route('/visites/{id}', name: 'api_visiteur_visite_show', methods: ['GET'])]
-    public function getMonCompteRendu(int $id, #[CurrentUser] ?Profil $profil): JsonResponse
+    public function getMonCompteRendu(int $id, Request $request): JsonResponse
     {
-        if (!$profil || !$profil->getVisiteur()) {
+        $visiteur = $this->getVisiteurFromRequest($request);
+        if (!$visiteur) {
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
-        $visite = $this->visiteRepository->findOneByVisiteurAndId($profil->getVisiteur(), $id);
-
+        $visite = $this->visiteRepository->findOneByVisiteurAndId($visiteur, $id);
         if (!$visite) {
             return $this->json(['error' => 'Visite non trouvée ou non autorisée'], 404);
         }
@@ -78,24 +81,21 @@ class VisiteurController extends AbstractController
 
     /**
      * Ajouter une visite - POST /api/visiteur/visites
-     * Reproduit la logique legacy : vérifie praticien non déjà dans portefeuille, médicaments uniques
      */
     #[Route('/visites', name: 'api_visiteur_visite_add', methods: ['POST'])]
-    public function addVisite(Request $request, #[CurrentUser] ?Profil $profil): JsonResponse
+    public function addVisite(Request $request): JsonResponse
     {
-        if (!$profil || !$profil->getVisiteur()) {
+        $visiteur = $this->getVisiteurFromRequest($request);
+        if (!$visiteur) {
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
-        $visiteur = $profil->getVisiteur();
         $data = json_decode($request->getContent(), true);
 
-        // Validation des données requises
         if (empty($data['motifVisite']) || empty($data['dateVisite']) || empty($data['praticien'])) {
             return $this->json(['error' => 'motifVisite, dateVisite et praticien sont requis'], 400);
         }
 
-        // Récupération et validation du praticien
         $praticienData = $data['praticien'];
         $numSeq = $praticienData['numSeq'] ?? null;
         $idPraticien = $praticienData['id'] ?? null;
@@ -109,7 +109,7 @@ class VisiteurController extends AbstractController
             return $this->json(['error' => 'Praticien non trouvé'], 404);
         }
 
-        // VÉRIFICATION PORTEFEUILLE : le praticien est-il déjà dans le portefeuille ?
+        // Vérification portefeuille
         $existingRepertorier = $this->repertorierRepository->findOneBy([
             'visiteur' => $visiteur,
             'praticien' => $praticien
@@ -118,14 +118,14 @@ class VisiteurController extends AbstractController
         if ($existingRepertorier) {
             return $this->json([
                 'error' => 'Visite non ajoutée',
-                'message' => "Le praticien {$praticien->getNom()} {$praticien->getPrenom()} existe déjà dans votre portefeuille (vous avez déjà visité ce praticien)."
+                'message' => "Le praticien {$praticien->getNom()} {$praticien->getPrenom()} existe déjà dans votre portefeuille."
             ], 409);
         }
 
-        // VÉRIFICATION MÉDICAMENTS UNIQUES
-        $echantillonsData = $data['echantillons'] ?? [];
-        if (!empty($echantillonsData)) {
-            $medicamentIds = array_column($echantillonsData, 'idMedicament');
+        // Vérification médicaments uniques
+        $propositionsData = $data['propositions'] ?? $data['echantillons'] ?? [];
+        if (!empty($propositionsData)) {
+            $medicamentIds = array_column($propositionsData, 'idMedicament');
             if (count($medicamentIds) !== count(array_unique($medicamentIds))) {
                 return $this->json([
                     'error' => 'Visite non ajoutée',
@@ -134,7 +134,7 @@ class VisiteurController extends AbstractController
             }
         }
 
-        // Création de la visite
+        // Création visite
         $visite = new Visite();
         $visite->setVisiteur($visiteur);
         $visite->setPraticien($praticien);
@@ -142,14 +142,14 @@ class VisiteurController extends AbstractController
         $visite->setMotif($data['motifVisite']);
         $visite->setBilan($data['bilanVisite'] ?? null);
 
-        // Ajout des échantillons
-        foreach ($echantillonsData as $echantillonData) {
-            $medicament = $this->medicamentRepository->find($echantillonData['idMedicament']);
+        // Ajout des propositions (échantillons) - CORRIGÉ ICI
+        foreach ($propositionsData as $propData) {
+            $medicament = $this->medicamentRepository->find($propData['idMedicament']);
             if ($medicament) {
-                $echantillon = new Echantillon();
-                $echantillon->setMedicament($medicament);
-                $echantillon->setQuantite($echantillonData['quantite'] ?? 1);
-                $visite->addEchantillon($echantillon);
+                $proposition = new Proposer();
+                $proposition->setMedicament($medicament);
+                $proposition->setQuantite($propData['quantite'] ?? 1);
+                $visite->addProposition($proposition);
             }
         }
 
@@ -158,7 +158,7 @@ class VisiteurController extends AbstractController
             return $this->json(['error' => (string) $errors], 400);
         }
 
-        // Transaction : ajouter au portefeuille + créer la visite
+        // Transaction
         $repertorier = new Repertorier();
         $repertorier->setVisiteur($visiteur);
         $repertorier->setPraticien($praticien);
@@ -175,34 +175,27 @@ class VisiteurController extends AbstractController
 
     /**
      * Créer un compte rendu - POST /api/visiteur/visites/{id}/report
-     * Génère un PDF et l'associe à la visite
      */
     #[Route('/visites/{id}/report', name: 'api_visiteur_compte_rendu', methods: ['POST'])]
-    public function createCompteRendu(int $id, Request $request, #[CurrentUser] ?Profil $profil): JsonResponse
+    public function createCompteRendu(int $id, Request $request): JsonResponse
     {
-        if (!$profil || !$profil->getVisiteur()) {
+        $visiteur = $this->getVisiteurFromRequest($request);
+        if (!$visiteur) {
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
-        $visite = $this->visiteRepository->findOneByVisiteurAndId($profil->getVisiteur(), $id);
-
+        $visite = $this->visiteRepository->findOneByVisiteurAndId($visiteur, $id);
         if (!$visite) {
-            return $this->json(['error' => 'Visite non trouvée ou non autorisée'], 404);
+            return $this->json(['error' => 'Visite non trouvée'], 404);
         }
 
         $data = json_decode($request->getContent(), true);
 
-        // Mise à jour du bilan et lien PDF si fournis
         if (isset($data['bilanVisite'])) {
             $visite->setBilan($data['bilanVisite']);
         }
 
-        // Génération PDF si demandé ou si fichier uploadé
-        if (isset($data['generatePdf']) && $data['generatePdf'] === true) {
-            // Appel au service de génération PDF (voir ci-dessous)
-            $pdfPath = $this->generatePdfForVisite($visite);
-            $visite->setCompteRendu($pdfPath);
-        } elseif (isset($data['lienPdf'])) {
+        if (isset($data['lienPdf'])) {
             $visite->setCompteRendu($data['lienPdf']);
         }
 
@@ -211,23 +204,21 @@ class VisiteurController extends AbstractController
         return $this->json([
             'message' => 'Compte rendu créé avec succès',
             'pdf_url' => $visite->getCompteRendu()
-        ], 200);
+        ]);
     }
 
     /**
      * Modifier une visite - PUT /api/visiteur/visites/{id}
-     * Reproduit la logique legacy avec gestion du portefeuille
      */
     #[Route('/visites/{id}', name: 'api_visiteur_visite_update', methods: ['PUT'])]
-    public function updateVisite(int $id, Request $request, #[CurrentUser] ?Profil $profil): JsonResponse
+    public function updateVisite(int $id, Request $request): JsonResponse
     {
-        if (!$profil || !$profil->getVisiteur()) {
+        $visiteur = $this->getVisiteurFromRequest($request);
+        if (!$visiteur) {
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
-        $visiteur = $profil->getVisiteur();
         $visite = $this->visiteRepository->findOneByVisiteurAndId($visiteur, $id);
-
         if (!$visite) {
             return $this->json(['error' => 'Visite non trouvée'], 404);
         }
@@ -235,7 +226,7 @@ class VisiteurController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $oldPraticien = $visite->getPraticien();
 
-        // Si changement de praticien
+        // Changement de praticien
         if (isset($data['praticien'])) {
             $praticienData = $data['praticien'];
             $numSeq = $praticienData['numSeq'] ?? null;
@@ -245,7 +236,7 @@ class VisiteurController extends AbstractController
                 $newPraticien = $this->praticienRepository->findOneBy(['numSeq' => $numSeq, 'id' => $idPraticien]);
 
                 if ($newPraticien && ($newPraticien->getNumSeq() !== $oldPraticien->getNumSeq() || $newPraticien->getId() !== $oldPraticien->getId())) {
-                    // Supprimer l'ancien répertoire
+                    // Supprimer ancien répertoire
                     $oldRepertorier = $this->repertorierRepository->findOneBy([
                         'visiteur' => $visiteur,
                         'praticien' => $oldPraticien
@@ -254,7 +245,7 @@ class VisiteurController extends AbstractController
                         $this->em->remove($oldRepertorier);
                     }
 
-                    // Vérifier que le nouveau n'est pas déjà dans le portefeuille
+                    // Vérifier nouveau pas déjà dans portefeuille
                     $existingRepertorier = $this->repertorierRepository->findOneBy([
                         'visiteur' => $visiteur,
                         'praticien' => $newPraticien
@@ -267,7 +258,6 @@ class VisiteurController extends AbstractController
                         ], 409);
                     }
 
-                    // Ajouter le nouveau au portefeuille
                     $newRepertorier = new Repertorier();
                     $newRepertorier->setVisiteur($visiteur);
                     $newRepertorier->setPraticien($newPraticien);
@@ -278,7 +268,7 @@ class VisiteurController extends AbstractController
             }
         }
 
-        // Mise à jour des champs
+        // Mise à jour champs
         if (isset($data['dateVisite'])) {
             $visite->setDate(new \DateTime($data['dateVisite']));
         }
@@ -292,9 +282,11 @@ class VisiteurController extends AbstractController
             $visite->setCompteRendu($data['lienPdfVisite']);
         }
 
-        // Mise à jour des échantillons
-        if (isset($data['echantillons'])) {
-            $medicamentIds = array_column($data['echantillons'], 'idMedicament');
+        // Mise à jour propositions (échantillons) - CORRIGÉ ICI
+        if (isset($data['propositions']) || isset($data['echantillons'])) {
+            $propositionsData = $data['propositions'] ?? $data['echantillons'] ?? [];
+            
+            $medicamentIds = array_column($propositionsData, 'idMedicament');
             if (count($medicamentIds) !== count(array_unique($medicamentIds))) {
                 return $this->json([
                     'error' => 'Modification impossible',
@@ -302,22 +294,17 @@ class VisiteurController extends AbstractController
                 ], 409);
             }
 
-            $visite->clearEchantillons();
-            foreach ($data['echantillons'] as $echantillonData) {
-                $medicament = $this->medicamentRepository->find($echantillonData['idMedicament']);
+            $visite->clearPropositions();  // CORRIGÉ ICI
+            
+            foreach ($propositionsData as $propData) {
+                $medicament = $this->medicamentRepository->find($propData['idMedicament']);
                 if ($medicament) {
-                    $echantillon = new Echantillon();
-                    $echantillon->setMedicament($medicament);
-                    $echantillon->setQuantite($echantillonData['quantite'] ?? 1);
-                    $visite->addEchantillon($echantillon);
+                    $proposition = new Proposer();
+                    $proposition->setMedicament($medicament);
+                    $proposition->setQuantite($propData['quantite'] ?? 1);
+                    $visite->addProposition($proposition);  // CORRIGÉ ICI
                 }
             }
-        }
-
-        // Régénération PDF si compte rendu existant
-        if ($visite->getCompteRendu()) {
-            $pdfPath = $this->generatePdfForVisite($visite);
-            $visite->setCompteRendu($pdfPath);
         }
 
         $errors = $this->validator->validate($visite);
@@ -329,22 +316,21 @@ class VisiteurController extends AbstractController
 
         return $this->json([
             'message' => "Visite pour le motif : {$visite->getMotif()} du praticien {$visite->getPraticien()->getNom()} {$visite->getPraticien()->getPrenom()}, modifiée avec succès"
-        ], 200);
+        ]);
     }
 
     /**
      * Supprimer une visite - DELETE /api/visiteur/visites/{id}
      */
     #[Route('/visites/{id}', name: 'api_visiteur_visite_delete', methods: ['DELETE'])]
-    public function deleteVisite(int $id, #[CurrentUser] ?Profil $profil): JsonResponse
+    public function deleteVisite(int $id, Request $request): JsonResponse
     {
-        if (!$profil || !$profil->getVisiteur()) {
+        $visiteur = $this->getVisiteurFromRequest($request);
+        if (!$visiteur) {
             return $this->json(['error' => 'Non authentifié'], 401);
         }
 
-        $visiteur = $profil->getVisiteur();
         $visite = $this->visiteRepository->findOneByVisiteurAndId($visiteur, $id);
-
         if (!$visite) {
             return $this->json(['error' => 'Visite non trouvée'], 404);
         }
@@ -363,25 +349,6 @@ class VisiteurController extends AbstractController
 
         return $this->json([
             'message' => "Visite pour le motif : {$visite->getMotif()} du praticien {$visite->getPraticien()->getNom()} {$visite->getPraticien()->getPrenom()}, supprimée avec succès"
-        ], 200);
-    }
-
-    /**
-     * Service interne de génération PDF
-     */
-    private function generatePdfForVisite(Visite $visite): string
-    {
-        // Utiliser DomPDF ou TCPDF
-        // Retourne le chemin relatif du fichier généré
-        $filename = 'compte_rendu_' . $visite->getId() . '.pdf';
-        $filepath = '/uploads/reports/' . $filename;
-        
-        // Logique de génération PDF ici...
-        // $pdf = new \Dompdf\Dompdf();
-        // $pdf->loadHtml(...);
-        // $pdf->render();
-        // file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $filepath, $pdf->output());
-        
-        return $filepath;
+        ]);
     }
 }

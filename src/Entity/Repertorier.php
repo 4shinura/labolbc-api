@@ -10,35 +10,19 @@ use Doctrine\ORM\Mapping as ORM;
 class Repertorier
 {
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: Praticien::class)]
+    #[ORM\ManyToOne(targetEntity: Praticien::class, inversedBy: 'repertories')]
     #[ORM\JoinColumn(name: 'numeroSequentiel', referencedColumnName: 'numeroSequentiel')]
     #[ORM\JoinColumn(name: 'idPraticien', referencedColumnName: 'idPraticien')]
     private ?Praticien $praticien = null;
 
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: Visiteur::class)]
+    #[ORM\ManyToOne(targetEntity: Visiteur::class, inversedBy: 'repertories')]
     #[ORM\JoinColumn(name: 'idVisiteur', referencedColumnName: 'idVisiteur')]
     private ?Visiteur $visiteur = null;
 
-    public function getPraticien(): ?Praticien
-    {
-        return $this->praticien;
-    }
+    public function getPraticien(): ?Praticien { return $this->praticien; }
+    public function setPraticien(?Praticien $praticien): static { $this->praticien = $praticien; return $this; }
 
-    public function setPraticien(?Praticien $praticien): static
-    {
-        $this->praticien = $praticien;
-        return $this;
-    }
-
-    public function getVisiteur(): ?Visiteur
-    {
-        return $this->visiteur;
-    }
-
-    public function setVisiteur(?Visiteur $visiteur): static
-    {
-        $this->visiteur = $visiteur;
-        return $this;
-    }
+    public function getVisiteur(): ?Visiteur { return $this->visiteur; }
+    public function setVisiteur(?Visiteur $visiteur): static { $this->visiteur = $visiteur; return $this; }
 }

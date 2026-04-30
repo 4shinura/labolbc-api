@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller;
 
 use App\Repository\VisiteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,7 +37,6 @@ class VisiteController extends AbstractController
 
     /**
      * Voir un compte rendu - GET /api/visites/{id}
-     * Retourne soit le PDF, soit les données de la visite
      */
     #[Route('/visites/{id}', name: 'api_visite_show', methods: ['GET'])]
     public function show(int $id): JsonResponse
@@ -48,7 +47,6 @@ class VisiteController extends AbstractController
             return $this->json(['error' => 'Visite non trouvée'], 404);
         }
 
-        // Si compte rendu PDF existe, retourner l'URL
         if ($visite->getCompteRendu()) {
             return $this->json([
                 'visite' => json_decode($this->serializer->serialize($visite, 'json', ['groups' => 'visite:read']), true),

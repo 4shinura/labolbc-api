@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: VisiteRepository::class)]
 #[ORM\Table(name: 'visite')]
@@ -23,15 +23,15 @@ class Visite
     #[Groups(['visite:read', 'visite:list'])]
     private ?\DateTimeInterface $date = null;
 
-    #[ORM\Column(name: 'motifVisite', length: 255)]
+    #[ORM\Column(name: 'motifVisite', length: 200)]
     #[Groups(['visite:read', 'visite:list'])]
     private ?string $motif = null;
 
-    #[ORM\Column(name: 'bilanVisite', type: Types::TEXT, nullable: true)]
+    #[ORM\Column(name: 'bilanVisite', length: 300, nullable: true)]
     #[Groups(['visite:read'])]
     private ?string $bilan = null;
 
-    #[ORM\Column(name: 'compteRenduVisite', length: 500, nullable: true)]
+    #[ORM\Column(name: 'compteRenduVisite', length: 100, nullable: true)]
     #[Groups(['visite:read'])]
     private ?string $compteRendu = null;
 
@@ -46,123 +46,61 @@ class Visite
     #[Groups(['visite:read', 'visite:list'])]
     private ?Praticien $praticien = null;
 
-    #[ORM\OneToMany(mappedBy: 'visite', targetEntity: Echantillon::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
-    #[Groups(['visite:read'])]
-    private Collection $echantillons;
+    #[ORM\OneToMany(mappedBy: 'visite', targetEntity: Proposer::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
+    private Collection $propositions;
 
     public function __construct()
     {
-        $this->echantillons = new ArrayCollection();
+        $this->propositions = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    public function getId(): ?int { return $this->id; }
+    public function setId(int $id): static { $this->id = $id; return $this; }
 
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-        return $this;
-    }
+    public function getDate(): ?\DateTimeInterface { return $this->date; }
+    public function setDate(\DateTimeInterface $date): static { $this->date = $date; return $this; }
 
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
+    public function getMotif(): ?string { return $this->motif; }
+    public function setMotif(string $motif): static { $this->motif = $motif; return $this; }
 
-    public function setDate(\DateTimeInterface $date): static
-    {
-        $this->date = $date;
-        return $this;
-    }
+    public function getBilan(): ?string { return $this->bilan; }
+    public function setBilan(?string $bilan): static { $this->bilan = $bilan; return $this; }
 
-    public function getMotif(): ?string
-    {
-        return $this->motif;
-    }
+    public function getCompteRendu(): ?string { return $this->compteRendu; }
+    public function setCompteRendu(?string $compteRendu): static { $this->compteRendu = $compteRendu; return $this; }
 
-    public function setMotif(string $motif): static
-    {
-        $this->motif = $motif;
-        return $this;
-    }
+    public function getVisiteur(): ?Visiteur { return $this->visiteur; }
+    public function setVisiteur(?Visiteur $visiteur): static { $this->visiteur = $visiteur; return $this; }
 
-    public function getBilan(): ?string
-    {
-        return $this->bilan;
-    }
+    public function getPraticien(): ?Praticien { return $this->praticien; }
+    public function setPraticien(?Praticien $praticien): static { $this->praticien = $praticien; return $this; }
 
-    public function setBilan(?string $bilan): static
-    {
-        $this->bilan = $bilan;
-        return $this;
-    }
+    /** @return Collection<int, Proposer> */
+    public function getPropositions(): Collection { return $this->propositions; }
 
-    public function getCompteRendu(): ?string
+    public function addProposition(Proposer $proposition): static
     {
-        return $this->compteRendu;
-    }
-
-    public function setCompteRendu(?string $compteRendu): static
-    {
-        $this->compteRendu = $compteRendu;
-        return $this;
-    }
-
-    public function getVisiteur(): ?Visiteur
-    {
-        return $this->visiteur;
-    }
-
-    public function setVisiteur(?Visiteur $visiteur): static
-    {
-        $this->visiteur = $visiteur;
-        return $this;
-    }
-
-    public function getPraticien(): ?Praticien
-    {
-        return $this->praticien;
-    }
-
-    public function setPraticien(?Praticien $praticien): static
-    {
-        $this->praticien = $praticien;
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Echantillon>
-     */
-    public function getEchantillons(): Collection
-    {
-        return $this->echantillons;
-    }
-
-    public function addEchantillon(Echantillon $echantillon): static
-    {
-        if (!$this->echantillons->contains($echantillon)) {
-            $this->echantillons->add($echantillon);
-            $echantillon->setVisite($this);
+        if (!$this->propositions->contains($proposition)) {
+            $this->propositions->add($proposition);
+            $proposition->setVisite($this);
         }
         return $this;
     }
 
-    public function removeEchantillon(Echantillon $echantillon): static
+    public function removeProposition(Proposer $proposition): static
     {
-        if ($this->echantillons->removeElement($echantillon)) {
-            if ($echantillon->getVisite() === $this) {
-                $echantillon->setVisite(null);
+        if ($this->propositions->removeElement($proposition)) {
+            if ($proposition->getVisite() === $this) {
+                $proposition->setVisite(null);
             }
         }
         return $this;
     }
 
-    public function clearEchantillons(): static
+    public function clearPropositions(): static
     {
-        foreach ($this->echantillons as $echantillon) {
-            $this->removeEchantillon($echantillon);
+        foreach ($this->propositions as $proposition) {
+            $this->removeProposition($proposition);
         }
         return $this;
     }
