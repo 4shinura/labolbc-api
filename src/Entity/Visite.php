@@ -41,8 +41,7 @@ class Visite
     private ?Visiteur $visiteur = null;
 
     #[ORM\ManyToOne(targetEntity: Praticien::class, inversedBy: 'visites')]
-    #[ORM\JoinColumn(name: 'numeroSequentiel', referencedColumnName: 'numeroSequentiel')]
-    #[ORM\JoinColumn(name: 'idPraticien', referencedColumnName: 'idPraticien')]
+    #[ORM\JoinColumn(nullable: false)]
     #[Groups(['visite:read', 'visite:list'])]
     private ?Praticien $praticien = null;
 

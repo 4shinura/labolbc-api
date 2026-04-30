@@ -87,7 +87,7 @@ class AppFixtures extends Fixture
         // ==================== PRATICIENS ====================
         $praticien1 = new Praticien();
         $praticien1->setNumSeq(1);
-        $praticien1->setId(101);
+        $praticien1->setIdPraticien(101);
         $praticien1->setNom('Durand');
         $praticien1->setPrenom('Michel');
         $praticien1->setSpecialite($specialite1);
@@ -95,7 +95,7 @@ class AppFixtures extends Fixture
 
         $praticien2 = new Praticien();
         $praticien2->setNumSeq(1);
-        $praticien2->setId(103);
+        $praticien2->setIdPraticien(103);
         $praticien2->setNom('Robert');
         $praticien2->setPrenom('Axel');
         $praticien2->setSpecialite($specialite1);
@@ -103,7 +103,7 @@ class AppFixtures extends Fixture
 
         $praticien3 = new Praticien();
         $praticien3->setNumSeq(2);
-        $praticien3->setId(102);
+        $praticien3->setIdPraticien(102);
         $praticien3->setNom('Bernard');
         $praticien3->setPrenom('Anna');
         $praticien3->setSpecialite($specialite2);
@@ -111,7 +111,7 @@ class AppFixtures extends Fixture
 
         $praticien4 = new Praticien();
         $praticien4->setNumSeq(2);
-        $praticien4->setId(103);
+        $praticien4->setIdPraticien(103);
         $praticien4->setNom('Pidoux');
         $praticien4->setPrenom('Gaëlle');
         $praticien4->setSpecialite($specialite2);
@@ -119,7 +119,7 @@ class AppFixtures extends Fixture
 
         $praticien5 = new Praticien();
         $praticien5->setNumSeq(3);
-        $praticien5->setId(103);
+        $praticien5->setIdPraticien(103);
         $praticien5->setNom('Morel');
         $praticien5->setPrenom('Julie');
         $praticien5->setSpecialite($specialite3);
@@ -127,7 +127,7 @@ class AppFixtures extends Fixture
 
         $praticien6 = new Praticien();
         $praticien6->setNumSeq(3);
-        $praticien6->setId(104);
+        $praticien6->setIdPraticien(104);
         $praticien6->setNom('Bakanova');
         $praticien6->setPrenom('Zargan');
         $praticien6->setSpecialite($specialite3);

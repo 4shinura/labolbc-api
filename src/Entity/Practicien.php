@@ -10,17 +10,22 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PraticienRepository::class)]
 #[ORM\Table(name: 'praticien')]
+#[ORM\UniqueConstraint(name: 'uniq_praticien', columns: ['numeroSequentiel', 'idPraticien'])]
 class Praticien
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    #[Groups(['praticien:read', 'visite:read'])]
+    private ?int $id = null;
+
     #[ORM\Column(name: 'numeroSequentiel')]
     #[Groups(['praticien:read', 'visite:read'])]
     private ?int $numSeq = null;
 
-    #[ORM\Id]
     #[ORM\Column(name: 'idPraticien')]
     #[Groups(['praticien:read', 'visite:read'])]
-    private ?int $id = null;
+    private ?int $idPraticien = null;
 
     #[ORM\Column(name: 'nomPraticien', length: 50)]
     #[Groups(['praticien:read', 'visite:read'])]
@@ -54,11 +59,14 @@ class Praticien
         $this->participations = new ArrayCollection();
     }
 
+    public function getId(): ?int { return $this->id; }
+    public function setId(int $id): static { $this->id = $id; return $this; }
+
     public function getNumSeq(): ?int { return $this->numSeq; }
     public function setNumSeq(int $numSeq): static { $this->numSeq = $numSeq; return $this; }
 
-    public function getId(): ?int { return $this->id; }
-    public function setId(int $id): static { $this->id = $id; return $this; }
+    public function getIdPraticien(): ?int { return $this->idPraticien; }
+    public function setIdPraticien(int $idPraticien): static { $this->idPraticien = $idPraticien; return $this; }
 
     public function getNom(): ?string { return $this->nom; }
     public function setNom(string $nom): static { $this->nom = $nom; return $this; }

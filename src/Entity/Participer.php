@@ -10,19 +10,21 @@ use Doctrine\ORM\Mapping as ORM;
 class Participer
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
     #[ORM\ManyToOne(targetEntity: Praticien::class, inversedBy: 'participations')]
-    #[ORM\JoinColumn(name: 'numeroSequentiel', referencedColumnName: 'numeroSequentiel')]
-    #[ORM\JoinColumn(name: 'idPraticien', referencedColumnName: 'idPraticien')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Praticien $praticien = null;
 
-    #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Ac::class, inversedBy: 'participations')]
-    #[ORM\JoinColumn(name: 'idAC', referencedColumnName: 'idAC')]
+    #[ORM\JoinColumn(name: 'idAC', referencedColumnName: 'idAC', nullable: false)]
     private ?Ac $ac = null;
 
+    public function getId(): ?int { return $this->id; }
     public function getPraticien(): ?Praticien { return $this->praticien; }
     public function setPraticien(?Praticien $praticien): static { $this->praticien = $praticien; return $this; }
-
     public function getAc(): ?Ac { return $this->ac; }
     public function setAc(?Ac $ac): static { $this->ac = $ac; return $this; }
 }
