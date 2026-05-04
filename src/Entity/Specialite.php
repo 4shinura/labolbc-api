@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 class Specialite
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(name: 'numeroSequentiel')]
     #[Groups(['specialite:read', 'praticien:read'])]
     private ?int $numeroSequentiel = null;

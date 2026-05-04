@@ -15,11 +15,11 @@ class Visiteur
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'idVisiteur')]
-    #[Groups(['visiteur:read', 'visite:read'])]
+    #[Groups(['visiteur:read', 'visite:read', 'visite:list'])]
     private ?int $id = null;
 
     #[ORM\Column(name: 'nomVisiteur', length: 50)]
-    #[Groups(['visiteur:read'])]
+    #[Groups(['visiteur:read', 'visite:read', 'visite:list'])]
     private ?string $nom = null;
 
     #[ORM\OneToOne(inversedBy: 'visiteur', targetEntity: Profil::class)]

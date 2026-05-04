@@ -28,20 +28,20 @@ class Visite
     private ?string $motif = null;
 
     #[ORM\Column(name: 'bilanVisite', length: 300, nullable: true)]
-    #[Groups(['visite:read'])]
+    #[Groups(['visite:read', 'visite:list'])]
     private ?string $bilan = null;
 
     #[ORM\Column(name: 'compteRenduVisite', length: 100, nullable: true)]
-    #[Groups(['visite:read'])]
+    #[Groups(['visite:read', 'visite:list'])]
     private ?string $compteRendu = null;
 
     #[ORM\ManyToOne(targetEntity: Visiteur::class, inversedBy: 'visites')]
     #[ORM\JoinColumn(name: 'idVisiteur', referencedColumnName: 'idVisiteur')]
-    #[Groups(['visite:read'])]
+    #[Groups(['visite:read', 'visite:list'])]
     private ?Visiteur $visiteur = null;
 
     #[ORM\ManyToOne(targetEntity: Praticien::class, inversedBy: 'visites')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'praticien_id', referencedColumnName: 'id', nullable: false)]
     #[Groups(['visite:read', 'visite:list'])]
     private ?Praticien $praticien = null;
 

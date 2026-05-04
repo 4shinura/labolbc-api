@@ -14,27 +14,28 @@ class Praticien
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: 'id')]  // nouvelle clé primaire simple
+    #[Groups(['visite:read', 'visite:list', 'praticien:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'numeroSequentiel')]
-    #[Groups(['praticien:read', 'visite:read'])]
-    private ?int $numSeq = null;
+    #[ORM\Column(name: 'numeroSequentiel', type: 'integer')]
+    #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
+    private ?int $numeroSequentiel = null;
 
-    #[ORM\Column(name: 'idPraticien')]
-    #[Groups(['praticien:read', 'visite:read'])]
+    #[ORM\Column(name: 'idPraticien', type: 'integer')]
+    #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
     private ?int $idPraticien = null;
 
     #[ORM\Column(name: 'nomPraticien', length: 50)]
-    #[Groups(['praticien:read', 'visite:read'])]
+    #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
     private ?string $nom = null;
 
     #[ORM\Column(name: 'prenomPraticien', length: 50)]
-    #[Groups(['praticien:read', 'visite:read'])]
+    #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
     private ?string $prenom = null;
 
     #[ORM\ManyToOne(targetEntity: Specialite::class, inversedBy: 'praticiens')]
-    #[ORM\JoinColumn(name: 'numeroSequentiel', referencedColumnName: 'numeroSequentiel')]
+    #[ORM\JoinColumn(name: 'specialite_id', referencedColumnName: 'numeroSequentiel')]
     private ?Specialite $specialite = null;
 
     #[ORM\OneToMany(mappedBy: 'praticien', targetEntity: Travailler::class)]
@@ -60,8 +61,8 @@ class Praticien
     public function getId(): ?int { return $this->id; }
     public function setId(int $id): static { $this->id = $id; return $this; }
 
-    public function getNumSeq(): ?int { return $this->numSeq; }
-    public function setNumSeq(int $numSeq): static { $this->numSeq = $numSeq; return $this; }
+    public function getNumeroSequentiel(): ?int { return $this->numeroSequentiel; }
+    public function setNumeroSequentiel(int $numeroSequentiel): static { $this->numeroSequentiel = $numeroSequentiel; return $this; }
 
     public function getIdPraticien(): ?int { return $this->idPraticien; }
     public function setIdPraticien(int $idPraticien): static { $this->idPraticien = $idPraticien; return $this; }
