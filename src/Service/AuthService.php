@@ -22,11 +22,11 @@ class AuthService
     }
 
     /**
-     * Login : vérifie username/password, retourne le Profil ou null
+     * Login : vérifie email/password, retourne le Profil ou null
      */
-    public function login(string $username, string $password): ?Profil
+    public function login(string $email, string $password): ?Profil
     {
-        $profil = $this->repository->findOneBy(['username' => $username]);
+        $profil = $this->repository->findOneBy(['email' => $email]);
         
         if (!$profil) {
             return null;
