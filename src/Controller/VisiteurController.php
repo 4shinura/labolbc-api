@@ -7,11 +7,15 @@ use App\Entity\Repertorier;
 use App\Entity\Visite;
 use App\Repository\MedicamentRepository;
 use App\Repository\PraticienRepository;
+use App\Repository\PresenterRepository;
 use App\Repository\RepertorierRepository;
 use App\Repository\VisiteRepository;
 use App\Repository\VisiteurRepository;
 use App\Service\AuthService;
 use Doctrine\ORM\EntityManagerInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -350,5 +354,112 @@ class VisiteurController extends AbstractController
         return $this->json([
             'message' => "Visite pour le motif : {$visite->getMotif()} du praticien {$visite->getPraticien()->getNom()} {$visite->getPraticien()->getPrenom()}, supprimée avec succès"
         ]);
+    }
+
+    /**
+     * Récupérer les praticiens de la même région que le visiteur connecté
+     * GET /api/visiteur/praticiens
+     */
+    #[Route('/praticiens', name: 'api_visiteur_praticiens', methods: ['GET'])]
+    public function getPraticiensByRegion(
+        Request $request,
+        PresenterRepository $presenterRepository,
+        PraticienRepository $praticienRepository
+    ): JsonResponse {
+        $profil = $this->authService->getConnectedProfil($request);
+        if (!$profil) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
+
+        $visiteur = $profil->getVisiteur();
+        if (!$visiteur) {
+            return $this->json(['error' => 'Aucun visiteur associé à ce profil'], 404);
+        }
+
+        // Récupérer les régions du visiteur via Presenter
+        $presenters = $presenterRepository->findBy(['visiteur' => $visiteur]);
+        if (empty($presenters)) {
+            return $this->json(['praticiens' => []]);
+        }
+
+        $regionIds = array_map(fn($p) => $p->getRegion()->getId(), $presenters);
+        $regionIds = array_unique($regionIds);
+
+        // Récupérer les praticiens qui travaillent dans ces régions via PraticienRepository
+        $qb = $praticienRepository->createQueryBuilder('p')
+            ->innerJoin('p.travails', 't')
+            ->where('t.region IN (:regionIds)')
+            ->setParameter('regionIds', $regionIds)
+            ->distinct();
+
+        $praticiens = $qb->getQuery()->getResult();
+
+        $data = [];
+        foreach ($praticiens as $praticien) {
+            $data[] = [
+                'id' => $praticien->getId(),
+                'numeroSequentiel' => $praticien->getNumeroSequentiel(),
+                'idPraticien' => $praticien->getIdPraticien(),
+                'nom' => $praticien->getNom(),
+                'prenom' => $praticien->getPrenom(),
+                'specialite' => $praticien->getSpecialite() ? $praticien->getSpecialite()->getLibelle() : null,
+            ];
+        }
+
+        return $this->json(['praticiens' => $data]);
+    }
+
+    #[Route('/visite/{id}/pdf', name: 'api_visite_pdf', methods: ['GET'])]
+    public function generatePdf(int $id, VisiteRepository $visiteRepository, Request $request): Response  
+    {
+        $visite = $visiteRepository->find($id);
+        if (!$visite) {
+            return $this->json(['error' => 'Visite non trouvée'], 404);
+        }
+
+        $logoUrl = $request->getSchemeAndHttpHost() . '/img/lab-logo-bgless.png';
+
+        $data = [
+            'visite' => $visite,
+            'motif' => $visite->getMotif(),
+            'date' => $visite->getDate()->format('d/m/Y'),
+            'visiteur' => $visite->getVisiteur()?->getNom(),
+            'praticien' => $visite->getPraticien()?->getNom() . ' ' . $visite->getPraticien()?->getPrenom(),
+            'echantillons' => $this->formatEchantillons($visite),
+            'bilan' => $visite->getBilan() ?: 'Aucun bilan renseigné',
+            'logo_url' => $logoUrl, 
+        ];
+
+        // Générer le HTML à partir du template Twig
+        $html = $this->renderView('pdf/compte_rendu.html.twig', $data);
+
+        // Configuration de Dompdf
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);  
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Retourner le PDF en réponse
+        return new Response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="compte_rendu_' . $visite->getId() . '.pdf"'
+        ]);
+    }
+
+    private function formatEchantillons(Visite $visite): array
+    {
+        $echantillons = [];
+        foreach ($visite->getPropositions() as $proposition) {
+            $medicament = $proposition->getMedicament();
+            $quantite = $proposition->getQuantite();
+            if ($medicament) {
+                $echantillons[] = $quantite . ' échantillon(s) de ' . $medicament->getLibelle();
+            }
+        }
+        return $echantillons;
     }
 }

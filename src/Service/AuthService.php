@@ -86,7 +86,10 @@ class AuthService
             return null; // Signature invalide
         }
 
+        
         $payload = json_decode($this->base64UrlDecode($payloadB64), true);
+
+        
 
         // Vérifier expiration
         if (!isset($payload['exp']) || $payload['exp'] < time()) {
@@ -102,7 +105,6 @@ class AuthService
     public function getConnectedProfil(Request $request): ?Profil
     {
         $authHeader = $request->headers->get('Authorization', '');
-
         if (!str_starts_with($authHeader, 'Bearer ')) {
             return null;
         }
@@ -110,11 +112,11 @@ class AuthService
         $token = substr($authHeader, 7);
         $payload = $this->jwtDecode($token);
 
-        if (!$payload || !isset($payload['profil']['id'])) {
+        if (!$payload || !isset($payload['user']['id'])) {
             return null;
         }
 
-        return $this->repository->find($payload['profil']['id']);
+        return $this->repository->find($payload['user']['id']);
     }
 
     /**

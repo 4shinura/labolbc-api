@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Compte rendu de visite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            max-width: 80px;
+            margin-bottom: 10px;
+        }
+        h1 {
+            font-size: 20px;
+            color: #333;
+        }
+        .section-title {
+            background-color: #e6e6e6;
+            padding: 6px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .content {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{logo_url}}" class="logo" alt="Logo">
+        <h1>COMPTE RENDU DE VISITE</h1>
+        <hr>
+    </div>
+
+    <div class="section-title">Informations Générales</div>
+    <div class="content">
+        <p><strong>Motif :</strong> {{ motif }}</p>
+        <p><strong>Date :</strong> {{ date }}</p>
+        <p><strong>Visiteur :</strong> {{ visiteur }}</p>
+        <p><strong>Praticien :</strong> {{ praticien }}</p>
+    </div>
+
+    <div class="section-title">Échantillons Proposés</div>
+    <div class="content">
+        {% if echantillons is empty %}
+            <p>Aucun échantillon proposé.</p>
+        {% else %}
+            <ul>
+            {% for e in echantillons %}
+                <li>{{ e }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="section-title">Bilan</div>
+    <div class="content">
+        <p>{{ bilan|nl2br }}</p>
+    </div>
+
+    <div class="footer">
+        Page <span class="page"></span>
+    </div>
+</body>
+</html>

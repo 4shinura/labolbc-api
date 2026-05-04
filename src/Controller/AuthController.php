@@ -114,13 +114,15 @@ class AuthController extends AbstractController
     #[Route('/login', name: 'api_login', methods: ['POST'])]
     public function login(Request $request): JsonResponse
     {
-        $visiteur = new Visiteur();
-
         $data = json_decode($request->getContent(), true);
         $email = $data['email'] ?? '';
+
         $password = $data['password'] ?? '';
         
         $profil = $this->authService->login($email, $password);
+        $visiteur = $this->entityManager
+            ->getRepository(Visiteur::class)
+            ->findOneBy(['profil' => $profil->getId()]);
 
         if (!$profil) {
             return $this->json(['error' => 'Identifiants incorrects'], 401);
