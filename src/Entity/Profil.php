@@ -16,9 +16,9 @@ class Profil
     #[Groups(['profil:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'username', length: 50)]
+    #[ORM\Column(name: 'email', length: 100)]
     #[Groups(['profil:read'])]
-    private ?string $username = null;
+    private ?string $email = null;
 
     #[ORM\Column(name: 'password', length: 100)]
     private ?string $password = null;
@@ -33,8 +33,8 @@ class Profil
     public function getId(): ?int { return $this->id; }
     public function setId(int $id): static { $this->id = $id; return $this; }
 
-    public function getUsername(): ?string { return $this->username; }
-    public function setUsername(string $username): static { $this->username = $username; return $this; }
+    public function getEmail(): ?string { return $this->email; }
+    public function setEmail(string $email): static { $this->email = $email; return $this; }
 
     public function getPassword(): ?string { return $this->password; }
     public function setPassword(string $password): static { $this->password = $password; return $this; }
