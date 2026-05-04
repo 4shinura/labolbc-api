@@ -86,6 +86,7 @@ class AppFixtures extends Fixture
 
         // ==================== PRATICIENS ====================
         $praticien1 = new Praticien();
+        $praticien1->setId(1);
         $praticien1->setNumSeq(1);
         $praticien1->setIdPraticien(101);
         $praticien1->setNom('Durand');
@@ -94,6 +95,7 @@ class AppFixtures extends Fixture
         $manager->persist($praticien1);
 
         $praticien2 = new Praticien();
+        $praticien2->setId(2);
         $praticien2->setNumSeq(1);
         $praticien2->setIdPraticien(103);
         $praticien2->setNom('Robert');
@@ -102,6 +104,7 @@ class AppFixtures extends Fixture
         $manager->persist($praticien2);
 
         $praticien3 = new Praticien();
+        $praticien3->setId(3);
         $praticien3->setNumSeq(2);
         $praticien3->setIdPraticien(102);
         $praticien3->setNom('Bernard');
@@ -110,6 +113,7 @@ class AppFixtures extends Fixture
         $manager->persist($praticien3);
 
         $praticien4 = new Praticien();
+        $praticien4->setId(4);
         $praticien4->setNumSeq(2);
         $praticien4->setIdPraticien(103);
         $praticien4->setNom('Pidoux');
@@ -118,6 +122,7 @@ class AppFixtures extends Fixture
         $manager->persist($praticien4);
 
         $praticien5 = new Praticien();
+        $praticien5->setId(5);
         $praticien5->setNumSeq(3);
         $praticien5->setIdPraticien(103);
         $praticien5->setNom('Morel');
@@ -126,6 +131,7 @@ class AppFixtures extends Fixture
         $manager->persist($praticien5);
 
         $praticien6 = new Praticien();
+        $praticien6->setId(6);
         $praticien6->setNumSeq(3);
         $praticien6->setIdPraticien(104);
         $praticien6->setNom('Bakanova');
@@ -157,7 +163,7 @@ class AppFixtures extends Fixture
         $visite1->setBilan('Préfère manger des têtes brûlées :(');
         $visite1->setCompteRendu(null);
         $visite1->setVisiteur($visiteur1);
-        $visite1->setPraticien($praticien2); // Robert Axel (1,103)
+        $visite1->setPraticien($praticien2); // Robert Axel
         $manager->persist($visite1);
 
         $visite3 = new Visite();
@@ -167,7 +173,7 @@ class AppFixtures extends Fixture
         $visite3->setBilan('Inutile, ça fait aucun effet !!!');
         $visite3->setCompteRendu(null);
         $visite3->setVisiteur($visiteur1);
-        $visite3->setPraticien($praticien4); // Pidoux Gaëlle (2,103)
+        $visite3->setPraticien($praticien4); // Pidoux Gaëlle
         $manager->persist($visite3);
 
         $visite4 = new Visite();
@@ -177,92 +183,101 @@ class AppFixtures extends Fixture
         $visite4->setBilan('Elle adore mais aucun effet thérapeutique :(');
         $visite4->setCompteRendu(null);
         $visite4->setVisiteur($visiteur1);
-        $visite4->setPraticien($praticien6); // Bakanova Zargan (3,104)
+        $visite4->setPraticien($praticien6); // Bakanova Zargan
         $manager->persist($visite4);
 
         // ==================== PROPOSER (échantillons) ====================
         $proposer1 = new Proposer();
-        $proposer1->setVisite($visite1);
-        $proposer1->setMedicament($medicament1);
+        $proposer1->setVisiteId(1);
+        $proposer1->setMedicamentId(1);
         $proposer1->setQuantite(5);
         $manager->persist($proposer1);
 
         $proposer3 = new Proposer();
-        $proposer3->setVisite($visite3);
-        $proposer3->setMedicament($medicament1);
+        $proposer3->setVisiteId(3);
+        $proposer3->setMedicamentId(1);
         $proposer3->setQuantite(43);
         $manager->persist($proposer3);
 
         $proposer4 = new Proposer();
-        $proposer4->setVisite($visite4);
-        $proposer4->setMedicament($medicament1);
+        $proposer4->setVisiteId(4);
+        $proposer4->setMedicamentId(1);
         $proposer4->setQuantite(1);
         $manager->persist($proposer4);
 
         // ==================== REPERTORIER ====================
         $rep1 = new Repertorier();
-        $rep1->setPraticien($praticien2); // (1,103)
-        $rep1->setVisiteur($visiteur1);
+        $rep1->setNumSeq(1);
+        $rep1->setIdPraticien(103);
+        $rep1->setVisiteurId(2);
         $manager->persist($rep1);
 
         $rep2 = new Repertorier();
-        $rep2->setPraticien($praticien4); // (2,103)
-        $rep2->setVisiteur($visiteur1);
+        $rep2->setNumSeq(2);
+        $rep2->setIdPraticien(103);
+        $rep2->setVisiteurId(2);
         $manager->persist($rep2);
 
         $rep3 = new Repertorier();
-        $rep3->setPraticien($praticien6); // (3,104)
-        $rep3->setVisiteur($visiteur1);
+        $rep3->setNumSeq(3);
+        $rep3->setIdPraticien(104);
+        $rep3->setVisiteurId(2);
         $manager->persist($rep3);
 
         // ==================== PRESENTER (visiteur-région) ====================
         $presenter1 = new Presenter();
-        $presenter1->setVisiteur($visiteur1);
-        $presenter1->setRegion($region1);
-        $presenter1->setDateAffect(new \DateTime('2024-01-10'));
+        $presenter1->setVisiteurId(2);
+        $presenter1->setRegionId(1);
+        $presenter1->setDateAffect('2024-01-10'); // STRING !
         $manager->persist($presenter1);
 
         $presenter2 = new Presenter();
-        $presenter2->setVisiteur($visiteur1);
-        $presenter2->setRegion($region2);
-        $presenter2->setDateAffect(new \DateTime('2024-02-01'));
+        $presenter2->setVisiteurId(2);
+        $presenter2->setRegionId(2);
+        $presenter2->setDateAffect('2024-02-01'); // STRING !
         $manager->persist($presenter2);
 
         // ==================== TRAVAILLER (praticien-région) ====================
         $travail1 = new Travailler();
-        $travail1->setPraticien($praticien1); // Durand (1,101)
-        $travail1->setRegion($region1);
-        $travail1->setDate(new \DateTime('2024-01-15'));
+        $travail1->setNumSeq(1);
+        $travail1->setIdPraticien(101);
+        $travail1->setRegionId(1);
+        $travail1->setDateA('2024-01-15'); // STRING !
         $manager->persist($travail1);
 
         $travail2 = new Travailler();
-        $travail2->setPraticien($praticien2); // Robert (1,103)
-        $travail2->setRegion($region2);
-        $travail2->setDate(new \DateTime('2024-05-15'));
+        $travail2->setNumSeq(1);
+        $travail2->setIdPraticien(103);
+        $travail2->setRegionId(2);
+        $travail2->setDateA('2024-05-15'); // STRING !
         $manager->persist($travail2);
 
         $travail3 = new Travailler();
-        $travail3->setPraticien($praticien3); // Bernard (2,102)
-        $travail3->setRegion($region2);
-        $travail3->setDate(new \DateTime('2024-03-12'));
+        $travail3->setNumSeq(2);
+        $travail3->setIdPraticien(102);
+        $travail3->setRegionId(2);
+        $travail3->setDateA('2024-03-12'); // STRING !
         $manager->persist($travail3);
 
         $travail4 = new Travailler();
-        $travail4->setPraticien($praticien4); // Pidoux (2,103)
-        $travail4->setRegion($region2);
-        $travail4->setDate(new \DateTime('2024-06-04'));
+        $travail4->setNumSeq(2);
+        $travail4->setIdPraticien(103);
+        $travail4->setRegionId(2);
+        $travail4->setDateA('2024-06-04'); // STRING !
         $manager->persist($travail4);
 
         $travail5 = new Travailler();
-        $travail5->setPraticien($praticien6); // Bakanova (3,104)
-        $travail5->setRegion($region2);
-        $travail5->setDate(new \DateTime('2024-04-09'));
+        $travail5->setNumSeq(3);
+        $travail5->setIdPraticien(104);
+        $travail5->setRegionId(2);
+        $travail5->setDateA('2024-04-09'); // STRING !
         $manager->persist($travail5);
 
         $travail6 = new Travailler();
-        $travail6->setPraticien($praticien5); // Morel (3,103)
-        $travail6->setRegion($region3);
-        $travail6->setDate(new \DateTime('2024-04-20'));
+        $travail6->setNumSeq(3);
+        $travail6->setIdPraticien(103);
+        $travail6->setRegionId(3);
+        $travail6->setDateA('2024-04-20'); // STRING !
         $manager->persist($travail6);
 
         // ==================== AC (Activités Complémentaires) ====================
@@ -282,29 +297,32 @@ class AppFixtures extends Fixture
 
         // ==================== ORGANISER (visiteur-AC) ====================
         $org1 = new Organiser();
-        $org1->setVisiteur($visiteur1);
-        $org1->setAc($ac1);
+        $org1->setVisiteurId(2);
+        $org1->setAcId(1);
         $manager->persist($org1);
 
         $org2 = new Organiser();
-        $org2->setVisiteur($visiteur1);
-        $org2->setAc($ac2);
+        $org2->setVisiteurId(2);
+        $org2->setAcId(2);
         $manager->persist($org2);
 
         // ==================== PARTICIPER (praticien-AC) ====================
         $part1 = new Participer();
-        $part1->setPraticien($praticien1); // Durand (1,101)
-        $part1->setAc($ac1);
+        $part1->setNumSeq(1);
+        $part1->setIdPraticien(101);
+        $part1->setAcId(1);
         $manager->persist($part1);
 
         $part2 = new Participer();
-        $part2->setPraticien($praticien3); // Bernard (2,102)
-        $part2->setAc($ac1);
+        $part2->setNumSeq(2);
+        $part2->setIdPraticien(102);
+        $part2->setAcId(1);
         $manager->persist($part2);
 
         $part3 = new Participer();
-        $part3->setPraticien($praticien5); // Morel (3,103)
-        $part3->setAc($ac2);
+        $part3->setNumSeq(3);
+        $part3->setIdPraticien(103);
+        $part3->setAcId(2);
         $manager->persist($part3);
 
         // Flush final

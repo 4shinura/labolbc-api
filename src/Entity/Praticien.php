@@ -10,13 +10,11 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PraticienRepository::class)]
 #[ORM\Table(name: 'praticien')]
-#[ORM\UniqueConstraint(name: 'uniq_praticien', columns: ['numeroSequentiel', 'idPraticien'])]
 class Praticien
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['praticien:read', 'visite:read'])]
     private ?int $id = null;
 
     #[ORM\Column(name: 'numeroSequentiel')]

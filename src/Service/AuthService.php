@@ -27,11 +27,11 @@ class AuthService
     public function login(string $username, string $password): ?Profil
     {
         $profil = $this->repository->findOneBy(['username' => $username]);
-
+        
         if (!$profil) {
             return null;
         }
-
+        
         $hashedPassword = $profil->getPassword();
 
         // Vérifier mot de passe haché (bcrypt)

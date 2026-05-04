@@ -24,7 +24,7 @@ class AuthController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $username = $data['email'] ?? '';
         $password = $data['password'] ?? '';
-
+        
         $profil = $this->authService->login($username, $password);
 
         if (!$profil) {
@@ -33,7 +33,7 @@ class AuthController extends AbstractController
 
         // Générer le JWT
         $token = $this->authService->jwtGenerate([
-            'profil' => [
+            'user' => [
                 'id' => $profil->getId(),
                 'username' => $profil->getUsername(),
                 'type' => $profil->getUsertype()
@@ -42,7 +42,7 @@ class AuthController extends AbstractController
 
         return $this->json([
             'token' => $token,
-            'profil' => [
+            'user' => [
                 'id' => $profil->getId(),
                 'username' => $profil->getUsername(),
                 'type' => $profil->getUsertype()
