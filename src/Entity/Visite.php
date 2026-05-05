@@ -29,7 +29,7 @@ class Visite
 
     #[ORM\Column(name: 'bilanVisite', length: 300, nullable: true)]
     #[Groups(['visite:read', 'visite:list'])]
-    private ?string $bilan = null;
+    private ?string $visite = null;
 
     #[ORM\Column(name: 'compteRenduVisite', length: 100, nullable: true)]
     #[Groups(['visite:read', 'visite:list'])]
@@ -41,7 +41,7 @@ class Visite
     private ?Visiteur $visiteur = null;
 
     #[ORM\ManyToOne(targetEntity: Praticien::class, inversedBy: 'visites')]
-    #[ORM\JoinColumn(name: 'praticien_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'praticien_id', referencedColumnName: 'idPraticien', nullable: false)]
     #[Groups(['visite:read', 'visite:list'])]
     private ?Praticien $praticien = null;
 
@@ -62,8 +62,8 @@ class Visite
     public function getMotif(): ?string { return $this->motif; }
     public function setMotif(string $motif): static { $this->motif = $motif; return $this; }
 
-    public function getBilan(): ?string { return $this->bilan; }
-    public function setBilan(?string $bilan): static { $this->bilan = $bilan; return $this; }
+    public function getBilan(): ?string { return $this->visite; }
+    public function setBilan(?string $visite): static { $this->visite = $visite; return $this; }
 
     public function getCompteRendu(): ?string { return $this->compteRendu; }
     public function setCompteRendu(?string $compteRendu): static { $this->compteRendu = $compteRendu; return $this; }

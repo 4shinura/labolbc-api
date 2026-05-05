@@ -15,7 +15,7 @@ class Participer
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Praticien::class, inversedBy: 'participations')]
-    #[ORM\JoinColumn(name: 'praticien_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'praticien_id', referencedColumnName: 'idPraticien', nullable: false)]
     private ?Praticien $praticien = null;
 
     #[ORM\ManyToOne(targetEntity: Ac::class, inversedBy: 'participations')]

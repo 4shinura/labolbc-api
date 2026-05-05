@@ -10,7 +10,6 @@ use App\Repository\PraticienRepository;
 use App\Repository\PresenterRepository;
 use App\Repository\RepertorierRepository;
 use App\Repository\VisiteRepository;
-use App\Repository\VisiteurRepository;
 use App\Service\AuthService;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
@@ -29,7 +28,6 @@ class VisiteurController extends AbstractController
     public function __construct(
         private AuthService $authService,
         private VisiteRepository $visiteRepository,
-        private VisiteurRepository $visiteurRepository,
         private PraticienRepository $praticienRepository,
         private MedicamentRepository $medicamentRepository,
         private RepertorierRepository $repertorierRepository,
@@ -101,14 +99,14 @@ class VisiteurController extends AbstractController
         }
 
         $praticienData = $data['praticien'];
-        $numSeq = $praticienData['numSeq'] ?? null;
-        $idPraticien = $praticienData['id'] ?? null;
+        $specialite = $praticienData['specialite'] ?? null;
+        $idPraticien = $praticienData['idPraticien'] ?? null;
 
-        if (!$numSeq || !$idPraticien) {
-            return $this->json(['error' => 'numSeq et id du praticien sont requis'], 400);
+        if (!$specialite || !$idPraticien) {
+            return $this->json(['error' => 'specialite et id du praticien sont requis'], 400);
         }
 
-        $praticien = $this->praticienRepository->findOneBy(['numSeq' => $numSeq, 'id' => $idPraticien]);
+        $praticien = $this->praticienRepository->findOneBy(['specialite' => $specialite, 'idPraticien' => $idPraticien]);
         if (!$praticien) {
             return $this->json(['error' => 'Praticien non trouvé'], 404);
         }
@@ -233,13 +231,13 @@ class VisiteurController extends AbstractController
         // Changement de praticien
         if (isset($data['praticien'])) {
             $praticienData = $data['praticien'];
-            $numSeq = $praticienData['numSeq'] ?? null;
+            $specialite = $praticienData['specialite'] ?? null;
             $idPraticien = $praticienData['id'] ?? null;
 
-            if ($numSeq && $idPraticien) {
-                $newPraticien = $this->praticienRepository->findOneBy(['numSeq' => $numSeq, 'id' => $idPraticien]);
+            if ($specialite && $idPraticien) {
+                $newPraticien = $this->praticienRepository->findOneBy(['specialite' => $specialite, 'id' => $idPraticien]);
 
-                if ($newPraticien && ($newPraticien->getNumSeq() !== $oldPraticien->getNumeroSequentiel() || $newPraticien->getId() !== $oldPraticien->getId())) {
+                if ($newPraticien && ($newPraticien->getSpecialite() !== $oldPraticien->getSpecialite() || $newPraticien->getIdPraticien() !== $oldPraticien->getIdPraticien())) {
                     // Supprimer ancien répertoire
                     $oldRepertorier = $this->repertorierRepository->findOneBy([
                         'visiteur' => $visiteur,
@@ -396,13 +394,15 @@ class VisiteurController extends AbstractController
 
         $data = [];
         foreach ($praticiens as $praticien) {
+            $specialite = $praticien->getSpecialite();
             $data[] = [
-                'id' => $praticien->getId(),
-                'numeroSequentiel' => $praticien->getNumeroSequentiel(),
+                'specialite' => $specialite ? [
+                    'numeroSequentiel' => $specialite->getNumeroSequentiel(),
+                    'libelle' => $specialite->getLibelle(),
+                ] : null,
                 'idPraticien' => $praticien->getIdPraticien(),
                 'nom' => $praticien->getNom(),
-                'prenom' => $praticien->getPrenom(),
-                'specialite' => $praticien->getSpecialite() ? $praticien->getSpecialite()->getLibelle() : null,
+                'prenom' => $praticien->getPrenom()
             ];
         }
 
@@ -421,8 +421,8 @@ class VisiteurController extends AbstractController
 
         $data = [
             'visite' => $visite,
-            'motif' => $visite->getMotif(),
-            'date' => $visite->getDate()->format('d/m/Y'),
+            'motifVisite' => $visite->getMotif(),
+            'dateVisite' => $visite->getDate()->format('d/m/Y'),
             'visiteur' => $visite->getVisiteur()?->getNom(),
             'praticien' => $visite->getPraticien()?->getNom() . ' ' . $visite->getPraticien()?->getPrenom(),
             'echantillons' => $this->formatEchantillons($visite),

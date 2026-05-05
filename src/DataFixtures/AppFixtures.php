@@ -32,9 +32,9 @@ class AppFixtures extends Fixture
         $manager->persist($region3);
 
         // SPECIALITES
-        $specialite1 = (new Specialite())->setNumeroSequentiel(1)->setLibelle('Généraliste');
-        $specialite2 = (new Specialite())->setNumeroSequentiel(2)->setLibelle('Cardiologue');
-        $specialite3 = (new Specialite())->setNumeroSequentiel(3)->setLibelle('Dermatologue');
+        $specialite1 = (new Specialite())->setNumeroSequentiel(13)->setLibelle('Généraliste');
+        $specialite2 = (new Specialite())->setNumeroSequentiel(14)->setLibelle('Cardiologue');
+        $specialite3 = (new Specialite())->setNumeroSequentiel(15)->setLibelle('Dermatologue');
         $manager->persist($specialite1);
         $manager->persist($specialite2);
         $manager->persist($specialite3);
@@ -62,17 +62,17 @@ class AppFixtures extends Fixture
 
         // PRATICIENS
         $praticien1 = (new Praticien())
-            ->setNumeroSequentiel(1)->setIdPraticien(101)->setNom('Durand')->setPrenom('Michel')->setSpecialite($specialite1);
+            ->setNom('Durand')->setPrenom('Michel')->setSpecialite($specialite1);
         $praticien2 = (new Praticien())
-            ->setNumeroSequentiel(1)->setIdPraticien(103)->setNom('Robert')->setPrenom('Axel')->setSpecialite($specialite1);
+            ->setNom('Robert')->setPrenom('Axel')->setSpecialite($specialite1);
         $praticien3 = (new Praticien())
-            ->setNumeroSequentiel(2)->setIdPraticien(102)->setNom('Bernard')->setPrenom('Anna')->setSpecialite($specialite2);
+            ->setNom('Bernard')->setPrenom('Anna')->setSpecialite($specialite2);
         $praticien4 = (new Praticien())
-            ->setNumeroSequentiel(2)->setIdPraticien(103)->setNom('Pidoux')->setPrenom('Gaëlle')->setSpecialite($specialite2);
+            ->setNom('Pidoux')->setPrenom('Gaëlle')->setSpecialite($specialite2);
         $praticien5 = (new Praticien())
-            ->setNumeroSequentiel(3)->setIdPraticien(103)->setNom('Morel')->setPrenom('Julie')->setSpecialite($specialite3);
+            ->setNom('Morel')->setPrenom('Julie')->setSpecialite($specialite3);
         $praticien6 = (new Praticien())
-            ->setNumeroSequentiel(3)->setIdPraticien(104)->setNom('Bakanova')->setPrenom('Zargan')->setSpecialite($specialite3);
+            ->setNom('Bakanova')->setPrenom('Zargan')->setSpecialite($specialite3);
         $manager->persist($praticien1);
         $manager->persist($praticien2);
         $manager->persist($praticien3);

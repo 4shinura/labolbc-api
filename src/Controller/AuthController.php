@@ -52,7 +52,7 @@ class AuthController extends AbstractController
         
         $profil = new Profil();
         $profil->setEmail($data['email']);
-        $profil->setUsertype($data['usertype'] ?? 'visiteur');
+        $profil->setUsertype($data['device'] ?? 'visiteur');
         
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
         $profil->setPassword($hashedPassword);
@@ -116,17 +116,28 @@ class AuthController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         $email = $data['email'] ?? '';
-
         $password = $data['password'] ?? '';
+        $deviceType = $data['device'] ?? ''; 
+        
+        if (empty($deviceType)) {
+            return $this->json(['error' => 'Le champ device est requis'], 400);
+        }
         
         $profil = $this->authService->login($email, $password);
-        $visiteur = $this->entityManager
-            ->getRepository(Visiteur::class)
-            ->findOneBy(['profil' => $profil->getId()]);
 
         if (!$profil) {
             return $this->json(['error' => 'Identifiants incorrects'], 401);
         }
+
+        if ($profil->getUsertype() !== $deviceType) {
+            return $this->json([
+                'error' => 'Accès non autorisé. Ce compte n\'est pas compatible avec cet appareil.'
+            ], 403);
+        }
+
+        $visiteur = $this->entityManager
+            ->getRepository(Visiteur::class)
+            ->findOneBy(['profil' => $profil->getId()]);
 
         // Générer le JWT
         $token = $this->authService->jwtGenerate([
@@ -139,6 +150,7 @@ class AuthController extends AbstractController
         ]);
 
         return $this->json([
+            'message' => 'Connexion réussie',
             'token' => $token,
             'profil' => [
                 'id' => $profil->getId(),

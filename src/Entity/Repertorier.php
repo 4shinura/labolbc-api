@@ -15,7 +15,7 @@ class Repertorier
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Praticien::class, inversedBy: 'repertories')]
-    #[ORM\JoinColumn(name: 'praticien_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'praticien_id', referencedColumnName: 'idPraticien', nullable: false)]
     private ?Praticien $praticien = null;
 
     #[ORM\ManyToOne(targetEntity: Visiteur::class, inversedBy: 'repertories')]
