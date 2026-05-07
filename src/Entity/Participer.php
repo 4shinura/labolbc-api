@@ -10,19 +10,34 @@ use Doctrine\ORM\Mapping as ORM;
 class Participer
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(name: 'numeroSequentiel', type: 'integer')]
+    private ?int $numeroSequentiel = null;
+
+    #[ORM\Id]
+    #[ORM\Column(name: 'idPraticien', type: 'integer')]
+    private ?int $idPraticien = null;
+
+    #[ORM\Id]
+    #[ORM\Column(name: 'idAC', type: 'integer')]
+    private ?int $idAC = null;
 
     #[ORM\ManyToOne(targetEntity: Praticien::class, inversedBy: 'participations')]
-    #[ORM\JoinColumn(name: 'praticien_id', referencedColumnName: 'idPraticien', nullable: false)]
+    #[ORM\JoinColumn(name: 'numeroSequentiel', referencedColumnName: 'numeroSequentiel')]
+    #[ORM\JoinColumn(name: 'idPraticien', referencedColumnName: 'idPraticien')]
     private ?Praticien $praticien = null;
 
     #[ORM\ManyToOne(targetEntity: Ac::class, inversedBy: 'participations')]
-    #[ORM\JoinColumn(name: 'ac_id', referencedColumnName: 'idAC', nullable: false)]
+    #[ORM\JoinColumn(name: 'idAC', referencedColumnName: 'idAC')]
     private ?Ac $ac = null;
 
-    public function getId(): ?int { return $this->id; }
+    public function getNumeroSequentiel(): ?int { return $this->numeroSequentiel; }
+    public function setNumeroSequentiel(int $numeroSequentiel): static { $this->numeroSequentiel = $numeroSequentiel; return $this; }
+
+    public function getIdPraticien(): ?int { return $this->idPraticien; }
+    public function setIdPraticien(int $idPraticien): static { $this->idPraticien = $idPraticien; return $this; }
+
+    public function getIdAC(): ?int { return $this->idAC; }
+    public function setIdAC(int $idAC): static { $this->idAC = $idAC; return $this; }
 
     public function getPraticien(): ?Praticien { return $this->praticien; }
     public function setPraticien(?Praticien $praticien): static { $this->praticien = $praticien; return $this; }

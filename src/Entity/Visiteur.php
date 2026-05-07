@@ -18,7 +18,7 @@ class Visiteur
     #[Groups(['visiteur:read', 'visite:read', 'visite:list'])]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'nomVisiteur', length: 50)]
+    #[ORM\Column(name: 'nomVisiteur', length: 50, nullable: true)]
     #[Groups(['visiteur:read', 'visite:read', 'visite:list'])]
     private ?string $nom = null;
 

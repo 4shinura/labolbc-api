@@ -10,19 +10,34 @@ use Doctrine\ORM\Mapping as ORM;
 class Repertorier
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(name: 'numeroSequentiel', type: 'integer')]
+    private ?int $numeroSequentiel = null;
+
+    #[ORM\Id]
+    #[ORM\Column(name: 'idPraticien', type: 'integer')]
+    private ?int $idPraticien = null;
+
+    #[ORM\Id]
+    #[ORM\Column(name: 'idVisiteur', type: 'integer')]
+    private ?int $idVisiteur = null;
 
     #[ORM\ManyToOne(targetEntity: Praticien::class, inversedBy: 'repertories')]
-    #[ORM\JoinColumn(name: 'praticien_id', referencedColumnName: 'idPraticien', nullable: false)]
+    #[ORM\JoinColumn(name: 'numeroSequentiel', referencedColumnName: 'numeroSequentiel')]
+    #[ORM\JoinColumn(name: 'idPraticien', referencedColumnName: 'idPraticien')]
     private ?Praticien $praticien = null;
 
     #[ORM\ManyToOne(targetEntity: Visiteur::class, inversedBy: 'repertories')]
-    #[ORM\JoinColumn(name: 'visiteur_id', referencedColumnName: 'idVisiteur', nullable: false)]
+    #[ORM\JoinColumn(name: 'idVisiteur', referencedColumnName: 'idVisiteur')]
     private ?Visiteur $visiteur = null;
 
-    public function getId(): ?int { return $this->id; }
+    public function getNumeroSequentiel(): ?int { return $this->numeroSequentiel; }
+    public function setNumeroSequentiel(int $numeroSequentiel): static { $this->numeroSequentiel = $numeroSequentiel; return $this; }
+
+    public function getIdPraticien(): ?int { return $this->idPraticien; }
+    public function setIdPraticien(int $idPraticien): static { $this->idPraticien = $idPraticien; return $this; }
+
+    public function getIdVisiteur(): ?int { return $this->idVisiteur; }
+    public function setIdVisiteur(int $idVisiteur): static { $this->idVisiteur = $idVisiteur; return $this; }
 
     public function getPraticien(): ?Praticien { return $this->praticien; }
     public function setPraticien(?Praticien $praticien): static { $this->praticien = $praticien; return $this; }

@@ -9,11 +9,17 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PraticienRepository::class)]
-#[ORM\Table(name: 'praticien')]
+#[ORM\Table(name: 'praticien', indexes: [
+    new ORM\Index(name: 'idx_praticien_composite', columns: ['numeroSequentiel', 'idPraticien'])
+])]
 class Praticien
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'numeroSequentiel', type: 'integer')]
+    #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
+    private ?int $numeroSequentiel = null;
+
+    #[ORM\Id]
     #[ORM\Column(name: 'idPraticien', type: 'integer')]
     #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
     private ?int $idPraticien = null;
@@ -22,11 +28,11 @@ class Praticien
     #[ORM\JoinColumn(name: 'numeroSequentiel', referencedColumnName: 'numeroSequentiel')]
     private ?Specialite $specialite = null;
 
-    #[ORM\Column(name: 'nomPraticien', length: 50)]
+    #[ORM\Column(name: 'nomPraticien', length: 50, nullable: true)]
     #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
     private ?string $nom = null;
 
-    #[ORM\Column(name: 'prenomPraticien', length: 50)]
+    #[ORM\Column(name: 'prenomPraticien', length: 50, nullable: true)]
     #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
     private ?string $prenom = null;
 
@@ -50,6 +56,9 @@ class Praticien
         $this->participations = new ArrayCollection();
     }
 
+    public function getNumeroSequentiel(): ?int { return $this->numeroSequentiel; }
+    public function setNumeroSequentiel(int $numeroSequentiel): static { $this->numeroSequentiel = $numeroSequentiel; return $this; }
+
     public function getIdPraticien(): ?int { return $this->idPraticien; }
     public function setIdPraticien(int $idPraticien): static { $this->idPraticien = $idPraticien; return $this; }
 
@@ -57,10 +66,10 @@ class Praticien
     public function setSpecialite(?Specialite $specialite): static { $this->specialite = $specialite; return $this; }
 
     public function getNom(): ?string { return $this->nom; }
-    public function setNom(string $nom): static { $this->nom = $nom; return $this; }
+    public function setNom(?string $nom): static { $this->nom = $nom; return $this; }
 
     public function getPrenom(): ?string { return $this->prenom; }
-    public function setPrenom(string $prenom): static { $this->prenom = $prenom; return $this; }
+    public function setPrenom(?string $prenom): static { $this->prenom = $prenom; return $this; }
 
     /** @return Collection<int, Travailler> */
     public function getTravails(): Collection { return $this->travails; }
