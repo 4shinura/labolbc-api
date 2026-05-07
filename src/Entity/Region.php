@@ -16,7 +16,7 @@ class Region
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'numRegion')]
     #[Groups(['region:read'])]
-    private ?int $id = null;
+    private ?int $numRegion = null;
 
     #[ORM\Column(name: 'libelleRegion', length: 50)]
     #[Groups(['region:read'])]
@@ -34,8 +34,8 @@ class Region
         $this->presentations = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function setId(int $id): static { $this->id = $id; return $this; }
+    public function getNumRegion(): ?int { return $this->numRegion; }
+    public function setNumRegion(int $numRegion): static { $this->numRegion = $numRegion; return $this; }
 
     public function getLibelle(): ?string { return $this->libelle; }
     public function setLibelle(string $libelle): static { $this->libelle = $libelle; return $this; }

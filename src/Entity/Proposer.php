@@ -20,7 +20,7 @@ class Proposer
 
     #[ORM\Column(name: 'nb_echantillon', type: 'integer', nullable: true)]
     #[Groups(['visite:read'])]
-    private ?int $nbEchantillon = null;
+    private ?int $nb_echantillon = null;
 
     #[ORM\ManyToOne(targetEntity: Visite::class, inversedBy: 'propositions')]
     #[ORM\JoinColumn(name: 'idVisite', referencedColumnName: 'idVisite')]
@@ -37,8 +37,8 @@ class Proposer
     public function getIdMedicament(): ?int { return $this->idMedicament; }
     public function setIdMedicament(int $idMedicament): static { $this->idMedicament = $idMedicament; return $this; }
 
-    public function getNbEchantillon(): ?int { return $this->nbEchantillon; }
-    public function setNbEchantillon(?int $nbEchantillon): static { $this->nbEchantillon = $nbEchantillon; return $this; }
+    public function getNbEchantillon(): ?int { return $this->nb_echantillon; }
+    public function setNbEchantillon(?int $nb_echantillon): static { $this->nb_echantillon = $nb_echantillon; return $this; }
 
     public function getVisite(): ?Visite { return $this->visite; }
     public function setVisite(?Visite $visite): static { $this->visite = $visite; return $this; }

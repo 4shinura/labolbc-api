@@ -17,23 +17,23 @@ class Visite
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'idVisite')]
     #[Groups(['visite:read', 'visite:list'])]
-    private ?int $id = null;
+    private ?int $idVisite = null;
 
     #[ORM\Column(name: 'dateVisite', type: Types::DATE_MUTABLE)]
     #[Groups(['visite:read', 'visite:list'])]
-    private ?\DateTimeInterface $date = null;
+    private ?\DateTimeInterface $dateVisite = null;
 
     #[ORM\Column(name: 'motifVisite', length: 200, nullable: true)]
     #[Groups(['visite:read', 'visite:list'])]
-    private ?string $motif = null;
+    private ?string $motifVisite = null;
 
     #[ORM\Column(name: 'bilanVisite', length: 300, nullable: true)]
     #[Groups(['visite:read', 'visite:list'])]
-    private ?string $bilan = null;
+    private ?string $bilanVisite = null;
 
     #[ORM\Column(name: 'compteRenduVisite', length: 100, nullable: true)]
     #[Groups(['visite:read', 'visite:list'])]
-    private ?string $compteRendu = null;
+    private ?string $compteRenduVisite = null;
 
     #[ORM\Column(name: 'idVisiteur', type: 'integer')]
     private ?int $idVisiteur = null;
@@ -63,20 +63,20 @@ class Visite
         $this->propositions = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function setId(int $id): static { $this->id = $id; return $this; }
+    public function getIdVisite(): ?int { return $this->idVisite; }
+    public function setIdVisite(int $idVisite): static { $this->idVisite = $idVisite; return $this; }
 
-    public function getDate(): ?\DateTimeInterface { return $this->date; }
-    public function setDate(\DateTimeInterface $date): static { $this->date = $date; return $this; }
+    public function getDateVisite(): ?\DateTimeInterface { return $this->dateVisite; }
+    public function setDateVisite(\DateTimeInterface $dateVisite): static { $this->dateVisite = $dateVisite; return $this; }
 
-    public function getMotif(): ?string { return $this->motif; }
-    public function setMotif(?string $motif): static { $this->motif = $motif; return $this; }
+    public function getMotifVisite(): ?string { return $this->motifVisite; }
+    public function setMotifVisite(?string $motifVisite): static { $this->motifVisite = $motifVisite; return $this; }
 
-    public function getBilan(): ?string { return $this->bilan; }
-    public function setBilan(?string $bilan): static { $this->bilan = $bilan; return $this; }
+    public function getBilanVisite(): ?string { return $this->bilanVisite; }
+    public function setBilanVisite(?string $bilanVisite): static { $this->bilanVisite = $bilanVisite; return $this; }
 
-    public function getCompteRendu(): ?string { return $this->compteRendu; }
-    public function setCompteRendu(?string $compteRendu): static { $this->compteRendu = $compteRendu; return $this; }
+    public function getCompteRenduVisite(): ?string { return $this->compteRenduVisite; }
+    public function setCompteRenduVisite(?string $compteRenduVisite): static { $this->compteRenduVisite = $compteRenduVisite; return $this; }
 
     public function getIdVisiteur(): ?int { return $this->idVisiteur; }
     public function setIdVisiteur(int $idVisiteur): static { $this->idVisiteur = $idVisiteur; return $this; }

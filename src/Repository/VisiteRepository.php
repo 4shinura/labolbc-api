@@ -19,11 +19,11 @@ class VisiteRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('v')
             ->leftJoin('v.praticien', 'p')
             ->leftJoin('v.visiteur', 'vi')
-            ->andWhere('v.motif LIKE :search')
-            ->orWhere('v.bilan LIKE :search')
-            ->orWhere('p.nom LIKE :search')
-            ->orWhere('p.prenom LIKE :search')
-            ->orWhere('vi.nom LIKE :search')
+            ->andWhere('v.motifVisite LIKE :search')
+            ->orWhere('v.bilanVisite LIKE :search')
+            ->orWhere('p.nomPraticien LIKE :search')
+            ->orWhere('p.prenomPraticien LIKE :search')
+            ->orWhere('vi.nomVisiteur LIKE :search')
             ->setParameter('search', '%' . $search . '%')
             ->getQuery()
             ->getResult();
@@ -34,7 +34,7 @@ class VisiteRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('v')
             ->andWhere('v.visiteur = :visiteur')
             ->setParameter('visiteur', $visiteur)
-            ->orderBy('v.date', 'DESC')
+            ->orderBy('v.dateVisite', 'DESC')
             ->getQuery()
             ->getResult();
     }
@@ -43,7 +43,7 @@ class VisiteRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('v')
             ->andWhere('v.visiteur = :visiteur')
-            ->andWhere('v.id = :id')
+            ->andWhere('v.idVisite = :id')
             ->setParameter('visiteur', $visiteur)
             ->setParameter('id', $id)
             ->getQuery()

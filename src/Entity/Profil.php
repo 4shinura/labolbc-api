@@ -14,7 +14,7 @@ class Profil
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'idProfil')]
     #[Groups(['profil:read'])]
-    private ?int $id = null;
+    private ?int $idProfil = null;
 
     #[ORM\Column(name: 'email', length: 100)]
     #[Groups(['profil:read'])]
@@ -25,13 +25,13 @@ class Profil
 
     #[ORM\Column(name: 'typeProfil', length: 50, nullable: true)]
     #[Groups(['profil:read'])]
-    private ?string $usertype = null;
+    private ?string $typeProfil = null;
 
     #[ORM\OneToOne(mappedBy: 'profil', targetEntity: Visiteur::class)]
     private ?Visiteur $visiteur = null;
 
-    public function getId(): ?int { return $this->id; }
-    public function setId(int $id): static { $this->id = $id; return $this; }
+    public function getIdProfil(): ?int { return $this->idProfil; }
+    public function setIdProfil(int $idProfil): static { $this->idProfil = $idProfil; return $this; }
 
     public function getEmail(): ?string { return $this->email; }
     public function setEmail(string $email): static { $this->email = $email; return $this; }
@@ -39,8 +39,8 @@ class Profil
     public function getPassword(): ?string { return $this->password; }
     public function setPassword(?string $password): static { $this->password = $password; return $this; }
 
-    public function getUsertype(): ?string { return $this->usertype; }
-    public function setUsertype(string $usertype): static { $this->usertype = $usertype; return $this; }
+    public function getTypeProfil(): ?string { return $this->typeProfil; }
+    public function setTypeProfil(string $typeProfil): static { $this->typeProfil = $typeProfil; return $this; }
 
     public function getVisiteur(): ?Visiteur { return $this->visiteur; }
     public function setVisiteur(?Visiteur $visiteur): static { $this->visiteur = $visiteur; return $this; }

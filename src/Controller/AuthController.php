@@ -52,7 +52,7 @@ class AuthController extends AbstractController
         
         $profil = new Profil();
         $profil->setEmail($data['email']);
-        $profil->setUsertype($data['device'] ?? 'visiteur');
+        $profil->setTypeProfil($data['device'] ?? 'visiteur');
         
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
         $profil->setPassword($hashedPassword);
@@ -70,7 +70,7 @@ class AuthController extends AbstractController
         $this->entityManager->flush();
         
         $visiteur = new Visiteur();
-        $visiteur->setNom($data['name']);
+        $visiteur->setNomVisiteur($data['name']);
         $visiteur->setProfil($profil); 
         
         $errorsVisiteur = $this->validator->validate($visiteur);
@@ -87,10 +87,10 @@ class AuthController extends AbstractController
         
         $token = $this->authService->jwtGenerate([
             'user' => [
-                'id' => $profil->getId(),
-                'name' => $visiteur->getNom(),
+                'id' => $profil->getIdProfil(),
+                'name' => $visiteur->getNomVisiteur(),
                 'email' => $profil->getEmail(),
-                'type' => $profil->getUsertype()
+                'type' => $profil->getTypeProfil()
             ]
         ]);
         
@@ -98,10 +98,10 @@ class AuthController extends AbstractController
             'message' => 'Inscription réussie',
             'token' => $token,
             'profil' => [
-                'id' => $profil->getId(),
-                'name' => $visiteur->getNom(),
+                'id' => $profil->getIdProfil(),
+                'name' => $visiteur->getNomVisiteur(),
                 'email' => $profil->getEmail(),
-                'type' => $profil->getUsertype()
+                'type' => $profil->getTypeProfil()
             ]
         ], 201);
     }
@@ -129,7 +129,7 @@ class AuthController extends AbstractController
             return $this->json(['error' => 'Identifiants incorrects'], 401);
         }
 
-        if ($profil->getUsertype() !== $deviceType) {
+        if ($profil->getTypeProfil() !== $deviceType) {
             return $this->json([
                 'error' => 'Accès non autorisé. Ce compte n\'est pas compatible avec cet appareil.'
             ], 403);
@@ -137,15 +137,15 @@ class AuthController extends AbstractController
 
         $visiteur = $this->entityManager
             ->getRepository(Visiteur::class)
-            ->findOneBy(['profil' => $profil->getId()]);
+            ->findOneBy(['profil' => $profil->getIdProfil()]);
 
         // Générer le JWT
         $token = $this->authService->jwtGenerate([
             'user' => [
-                'id' => $profil->getId(),
-                'name' => $visiteur->getNom(),
+                'id' => $profil->getIdProfil(),
+                'name' => $visiteur->getNomVisiteur(),
                 'email' => $profil->getEmail(),
-                'type' => $profil->getUsertype()
+                'type' => $profil->getTypeProfil()
             ]
         ]);
 
@@ -153,10 +153,10 @@ class AuthController extends AbstractController
             'message' => 'Connexion réussie',
             'token' => $token,
             'profil' => [
-                'id' => $profil->getId(),
-                'name' => $visiteur->getNom(),
+                'id' => $profil->getIdProfil(),
+                'name' => $visiteur->getNomVisiteur(),
                 'email' => $profil->getEmail(),
-                'type' => $profil->getUsertype()
+                'type' => $profil->getTypeProfil()
             ]
         ]);
     }
@@ -187,7 +187,7 @@ class AuthController extends AbstractController
     //     return $this->json([
     //         'id' => $profil->getId(),
     //         'email' => $profil->getEmail(),
-    //         'type' => $profil->getUsertype()
+    //         'type' => $profil->getTypeProfil()
     //     ]);
     // }
 }

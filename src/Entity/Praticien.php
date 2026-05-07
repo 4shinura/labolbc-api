@@ -30,11 +30,11 @@ class Praticien
 
     #[ORM\Column(name: 'nomPraticien', length: 50, nullable: true)]
     #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
-    private ?string $nom = null;
+    private ?string $nomPraticien = null;
 
     #[ORM\Column(name: 'prenomPraticien', length: 50, nullable: true)]
     #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
-    private ?string $prenom = null;
+    private ?string $prenomPraticien = null;
 
     #[ORM\OneToMany(mappedBy: 'praticien', targetEntity: Travailler::class)]
     private Collection $travails;
@@ -65,11 +65,11 @@ class Praticien
     public function getSpecialite(): ?Specialite { return $this->specialite; }
     public function setSpecialite(?Specialite $specialite): static { $this->specialite = $specialite; return $this; }
 
-    public function getNom(): ?string { return $this->nom; }
-    public function setNom(?string $nom): static { $this->nom = $nom; return $this; }
+    public function getNomPraticien(): ?string { return $this->nomPraticien; }
+    public function setNomPraticien(?string $nomPraticien): static { $this->nomPraticien = $nomPraticien; return $this; }
 
-    public function getPrenom(): ?string { return $this->prenom; }
-    public function setPrenom(?string $prenom): static { $this->prenom = $prenom; return $this; }
+    public function getPrenomPraticien(): ?string { return $this->prenomPraticien; }
+    public function setPrenomPraticien(?string $prenomPraticien): static { $this->prenomPraticien = $prenomPraticien; return $this; }
 
     /** @return Collection<int, Travailler> */
     public function getTravails(): Collection { return $this->travails; }

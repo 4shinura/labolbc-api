@@ -16,19 +16,19 @@ class Ac
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'idAC')]
     #[Groups(['ac:read'])]
-    private ?int $id = null;
+    private ?int $idAC = null;
 
     #[ORM\Column(name: 'themeAC', length: 50, nullable: true)]
     #[Groups(['ac:read'])]
-    private ?string $theme = null;
+    private ?string $themeAC = null;
 
     #[ORM\Column(name: 'dateAC', type: 'date', nullable: true)]
     #[Groups(['ac:read'])]
-    private ?\DateTimeInterface $date = null;
+    private ?\DateTimeInterface $dateAC = null;
 
     #[ORM\Column(name: 'lieuAC', length: 50, nullable: true)]
     #[Groups(['ac:read'])]
-    private ?string $lieu = null;
+    private ?string $lieuAC = null;
 
     #[ORM\OneToMany(mappedBy: 'ac', targetEntity: Participer::class)]
     private Collection $participations;
@@ -42,17 +42,17 @@ class Ac
         $this->organisations = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function setId(int $id): static { $this->id = $id; return $this; }
+    public function getIdAC(): ?int { return $this->idAC; }
+    public function setIdAC(int $idAC): static { $this->idAC = $idAC; return $this; }
 
-    public function getTheme(): ?string { return $this->theme; }
-    public function setTheme(?string $theme): static { $this->theme = $theme; return $this; }
+    public function getThemeAC(): ?string { return $this->themeAC; }
+    public function setThemeAC(?string $themeAC): static { $this->themeAC = $themeAC; return $this; }
 
-    public function getDate(): ?\DateTimeInterface { return $this->date; }
-    public function setDate(?\DateTimeInterface $date): static { $this->date = $date; return $this; }
+    public function getDateAC(): ?\DateTimeInterface { return $this->dateAC; }
+    public function setDateAC(?\DateTimeInterface $dateAC): static { $this->dateAC = $dateAC; return $this; }
 
-    public function getLieu(): ?string { return $this->lieu; }
-    public function setLieu(?string $lieu): static { $this->lieu = $lieu; return $this; }
+    public function getLieuAC(): ?string { return $this->lieuAC; }
+    public function setLieuAC(?string $lieuAC): static { $this->lieuAC = $lieuAC; return $this; }
 
     /** @return Collection<int, Participer> */
     public function getParticipations(): Collection { return $this->participations; }

@@ -16,7 +16,7 @@ class Medicament
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'idMedicament')]
     #[Groups(['medicament:read', 'visite:read'])]
-    private ?int $id = null;
+    private ?int $idMedicament = null;
 
     #[ORM\Column(name: 'libelleMedicament', length: 50)]
     #[Groups(['medicament:read', 'visite:read'])]
@@ -30,8 +30,8 @@ class Medicament
         $this->propositions = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function setId(int $id): static { $this->id = $id; return $this; }
+    public function getIdMedicament(): ?int { return $this->idMedicament; }
+    public function setIdMedicament(int $idMedicament): static { $this->idMedicament = $idMedicament; return $this; }
 
     public function getLibelle(): ?string { return $this->libelle; }
     public function setLibelle(string $libelle): static { $this->libelle = $libelle; return $this; }

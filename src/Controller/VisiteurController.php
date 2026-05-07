@@ -39,7 +39,7 @@ class VisiteurController extends AbstractController
     private function getVisiteurFromRequest(Request $request): ?\App\Entity\Visiteur
     {
         $profil = $this->authService->getConnectedProfil($request);
-        if (!$profil || $profil->getUsertype() !== 'visiteur') {
+        if (!$profil || $profil->getTypeProfil() !== 'visiteur') {
             return null;
         }
         return $profil->getVisiteur();
@@ -120,7 +120,7 @@ class VisiteurController extends AbstractController
         if ($existingRepertorier) {
             return $this->json([
                 'error' => 'Visite non ajoutée',
-                'message' => "Le praticien {$praticien->getNom()} {$praticien->getPrenom()} existe déjà dans votre portefeuille."
+                'message' => "Le praticien {$praticien->getNomPraticien()} {$praticien->getPrenomPraticien()} existe déjà dans votre portefeuille."
             ], 409);
         }
 
@@ -140,9 +140,9 @@ class VisiteurController extends AbstractController
         $visite = new Visite();
         $visite->setVisiteur($visiteur);
         $visite->setPraticien($praticien);
-        $visite->setDate(new \DateTime($data['dateVisite']));
-        $visite->setMotif($data['motifVisite']);
-        $visite->setBilan($data['bilanVisite'] ?? null);
+        $visite->setDateVisite(new \DateTime($data['dateVisite']));
+        $visite->setMotifVisite($data['motifVisite']);
+        $visite->setBilanVisite($data['bilanVisite'] ?? null);
 
         // Ajout des propositions (échantillons) - CORRIGÉ ICI
         foreach ($propositionsData as $propData) {
@@ -170,8 +170,8 @@ class VisiteurController extends AbstractController
         $this->em->flush();
 
         return $this->json([
-            'message' => "Visite pour le motif : {$visite->getMotif()} du praticien {$praticien->getNom()} {$praticien->getPrenom()}, ajoutée avec succès !",
-            'idVisite' => $visite->getId()
+            'message' => "Visite pour le motif : {$visite->getMotifVisite()} du praticien {$praticien->getNomPraticien()} {$praticien->getPrenomPraticien()}, ajoutée avec succès !",
+            'idVisite' => $visite->getIdVisite()
         ], 201);
     }
 
@@ -194,18 +194,18 @@ class VisiteurController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         if (isset($data['bilanVisite'])) {
-            $visite->setBilan($data['bilanVisite']);
+            $visite->setBilanVisite($data['bilanVisite']);
         }
 
-        if (isset($data['lienPdf'])) {
-            $visite->setCompteRendu($data['lienPdf']);
+        if (isset($data['compteRenduVisite'])) {
+            $visite->setCompteRenduVisite($data['compteRenduVisite']);
         }
 
         $this->em->flush();
 
         return $this->json([
             'message' => 'Compte rendu créé avec succès',
-            'pdf_url' => $visite->getCompteRendu()
+            'pdf_url' => $visite->getCompteRenduVisite()
         ]);
     }
 
@@ -232,10 +232,10 @@ class VisiteurController extends AbstractController
         if (isset($data['praticien'])) {
             $praticienData = $data['praticien'];
             $specialite = $praticienData['specialite'] ?? null;
-            $idPraticien = $praticienData['id'] ?? null;
+            $idPraticien = $praticienData['idPraticien'] ?? null;
 
             if ($specialite && $idPraticien) {
-                $newPraticien = $this->praticienRepository->findOneBy(['specialite' => $specialite, 'id' => $idPraticien]);
+                $newPraticien = $this->praticienRepository->findOneBy(['specialite' => $specialite, 'idPraticien' => $idPraticien]);
 
                 if ($newPraticien && ($newPraticien->getSpecialite() !== $oldPraticien->getSpecialite() || $newPraticien->getIdPraticien() !== $oldPraticien->getIdPraticien())) {
                     // Supprimer ancien répertoire
@@ -256,7 +256,7 @@ class VisiteurController extends AbstractController
                     if ($existingRepertorier) {
                         return $this->json([
                             'error' => 'Modification impossible',
-                            'message' => "Le praticien {$newPraticien->getNom()} {$newPraticien->getPrenom()} existe déjà dans votre portefeuille."
+                            'message' => "Le praticien {$newPraticien->getNomPraticien()} {$newPraticien->getPrenomPraticien()} existe déjà dans votre portefeuille."
                         ], 409);
                     }
 
@@ -272,16 +272,16 @@ class VisiteurController extends AbstractController
 
         // Mise à jour champs
         if (isset($data['dateVisite'])) {
-            $visite->setDate(new \DateTime($data['dateVisite']));
+            $visite->setDateVisite(new \DateTime($data['dateVisite']));
         }
         if (isset($data['motifVisite'])) {
-            $visite->setMotif($data['motifVisite']);
+            $visite->setMotifVisite($data['motifVisite']);
         }
         if (isset($data['bilanVisite'])) {
-            $visite->setBilan($data['bilanVisite']);
+            $visite->setBilanVisite($data['bilanVisite']);
         }
-        if (isset($data['lienPdfVisite'])) {
-            $visite->setCompteRendu($data['lienPdfVisite']);
+        if (isset($data['compteRenduVisite'])) {
+            $visite->setCompteRenduVisite($data['compteRenduVisite']);
         }
 
         // Mise à jour propositions (échantillons) - CORRIGÉ ICI
@@ -317,7 +317,7 @@ class VisiteurController extends AbstractController
         $this->em->flush();
 
         return $this->json([
-            'message' => "Visite pour le motif : {$visite->getMotif()} du praticien {$visite->getPraticien()->getNom()} {$visite->getPraticien()->getPrenom()}, modifiée avec succès"
+            'message' => "Visite pour le motif : {$visite->getMotifVisite()} du praticien {$visite->getPraticien()->getNomPraticien()} {$visite->getPraticien()->getPrenomPraticien()}, modifiée avec succès"
         ]);
     }
 
@@ -350,7 +350,7 @@ class VisiteurController extends AbstractController
         $this->em->flush();
 
         return $this->json([
-            'message' => "Visite pour le motif : {$visite->getMotif()} du praticien {$visite->getPraticien()->getNom()} {$visite->getPraticien()->getPrenom()}, supprimée avec succès"
+            'message' => "Visite pour le motif : {$visite->getMotifVisite()} du praticien {$visite->getPraticien()->getNomPraticien()} {$visite->getPraticien()->getPrenomPraticien()}, supprimée avec succès"
         ]);
     }
 

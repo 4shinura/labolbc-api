@@ -11,11 +11,11 @@ class Presenter
 {
     #[ORM\Id]
     #[ORM\Column(name: 'idVisiteur', type: 'integer')]
-    private ?int $visiteurId = null;
+    private ?int $idVisiteur = null;
 
     #[ORM\Id]
     #[ORM\Column(name: 'numRegion', type: 'integer')]
-    private ?int $regionId = null;
+    private ?int $numRegion = null;
 
     #[ORM\Id]
     #[ORM\Column(name: 'dateAffect', type: 'string', length: 10)]
@@ -29,11 +29,11 @@ class Presenter
     #[ORM\JoinColumn(name: 'numRegion', referencedColumnName: 'numRegion')]
     private ?Region $region = null;
 
-    public function getVisiteurId(): ?int { return $this->visiteurId; }
-    public function setVisiteurId(int $visiteurId): static { $this->visiteurId = $visiteurId; return $this; }
+    public function getIdVisiteur(): ?int { return $this->idVisiteur; }
+    public function setIdVisiteur(int $idVisiteur): static { $this->idVisiteur = $idVisiteur; return $this; }
 
-    public function getRegionId(): ?int { return $this->regionId; }
-    public function setRegionId(int $regionId): static { $this->regionId = $regionId; return $this; }
+    public function getNumRegion(): ?int { return $this->numRegion; }
+    public function setNumRegion(int $numRegion): static { $this->numRegion = $numRegion; return $this; }
 
     public function getDateAffect(): ?string { return $this->dateAffect; }
     public function setDateAffect(string $dateAffect): static { $this->dateAffect = $dateAffect; return $this; }

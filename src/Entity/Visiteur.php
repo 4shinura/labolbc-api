@@ -16,11 +16,11 @@ class Visiteur
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'idVisiteur')]
     #[Groups(['visiteur:read', 'visite:read', 'visite:list'])]
-    private ?int $id = null;
+    private ?int $idVisiteur = null;
 
     #[ORM\Column(name: 'nomVisiteur', length: 50, nullable: true)]
     #[Groups(['visiteur:read', 'visite:read', 'visite:list'])]
-    private ?string $nom = null;
+    private ?string $nomVisiteur = null;
 
     #[ORM\OneToOne(inversedBy: 'visiteur', targetEntity: Profil::class)]
     #[ORM\JoinColumn(name: 'idProfil', referencedColumnName: 'idProfil')]
@@ -46,11 +46,11 @@ class Visiteur
         $this->repertories = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function setId(int $id): static { $this->id = $id; return $this; }
+    public function getIdVisiteur(): ?int { return $this->idVisiteur; }
+    public function setIdVisiteur(int $idVisiteur): static { $this->idVisiteur = $idVisiteur; return $this; }
 
-    public function getNom(): ?string { return $this->nom; }
-    public function setNom(string $nom): static { $this->nom = $nom; return $this; }
+    public function getNomVisiteur(): ?string { return $this->nomVisiteur; }
+    public function setNomVisiteur(string $nomVisiteur): static { $this->nomVisiteur = $nomVisiteur; return $this; }
 
     public function getProfil(): ?Profil { return $this->profil; }
     public function setProfil(?Profil $profil): static { $this->profil = $profil; return $this; }
