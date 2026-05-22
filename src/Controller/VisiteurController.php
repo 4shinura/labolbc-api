@@ -164,6 +164,9 @@ class VisiteurController extends AbstractController
         $repertorier = new Repertorier();
         $repertorier->setVisiteur($visiteur);
         $repertorier->setPraticien($praticien);
+        $repertorier->setIdVisiteur($visiteur->getIdVisiteur());
+        $repertorier->setIdPraticien($praticien->getIdPraticien());
+        $repertorier->setNumeroSequentiel($this->repertorierRepository->getNextNumeroSequentiel());
 
         $this->em->persist($repertorier);
         $this->em->persist($visite);
@@ -231,7 +234,7 @@ class VisiteurController extends AbstractController
         // Changement de praticien
         if (isset($data['praticien'])) {
             $praticienData = $data['praticien'];
-            $specialite = $praticienData['specialite'] ?? null;
+            $specialite = $praticienData['specialitePraticien'] ?? null;
             $idPraticien = $praticienData['idPraticien'] ?? null;
 
             if ($specialite && $idPraticien) {
@@ -263,6 +266,9 @@ class VisiteurController extends AbstractController
                     $newRepertorier = new Repertorier();
                     $newRepertorier->setVisiteur($visiteur);
                     $newRepertorier->setPraticien($newPraticien);
+                    $newRepertorier->setIdVisiteur($visiteur->getIdVisiteur());
+                    $newRepertorier->setIdPraticien($newPraticien->getIdPraticien());
+                    $newRepertorier->setNumeroSequentiel($this->repertorierRepository->getNextNumeroSequentiel());
                     $this->em->persist($newRepertorier);
 
                     $visite->setPraticien($newPraticien);
