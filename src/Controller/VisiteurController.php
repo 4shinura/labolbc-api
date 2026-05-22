@@ -150,7 +150,7 @@ class VisiteurController extends AbstractController
             if ($medicament) {
                 $proposition = new Proposer();
                 $proposition->setMedicament($medicament);
-                $proposition->setQuantite($propData['quantite'] ?? 1);
+                $proposition->setNbEchantillon($propData['quantite'] ?? 1);
                 $visite->addProposition($proposition);
             }
         }
@@ -303,7 +303,7 @@ class VisiteurController extends AbstractController
                 if ($medicament) {
                     $proposition = new Proposer();
                     $proposition->setMedicament($medicament);
-                    $proposition->setQuantite($propData['quantite'] ?? 1);
+                    $proposition->setNbEchantillon($propData['quantite'] ?? 1);
                     $visite->addProposition($proposition);  // CORRIGÉ ICI
                 }
             }
@@ -380,7 +380,7 @@ class VisiteurController extends AbstractController
             return $this->json(['praticiens' => []]);
         }
 
-        $regionIds = array_map(fn($p) => $p->getRegion()->getId(), $presenters);
+        $regionIds = array_map(fn($p) => $p->getRegion()->getNumRegion(), $presenters);
         $regionIds = array_unique($regionIds);
 
         // Récupérer les praticiens qui travaillent dans ces régions via PraticienRepository
@@ -401,8 +401,8 @@ class VisiteurController extends AbstractController
                     'libelle' => $specialite->getLibelle(),
                 ] : null,
                 'idPraticien' => $praticien->getIdPraticien(),
-                'nom' => $praticien->getNom(),
-                'prenom' => $praticien->getPrenom()
+                'nom' => $praticien->getNomPraticien(),
+                'prenom' => $praticien->getPrenomPraticien()
             ];
         }
 
@@ -423,8 +423,8 @@ class VisiteurController extends AbstractController
             'visite' => $visite,
             'motifVisite' => $visite->getMotif(),
             'dateVisite' => $visite->getDate()->format('d/m/Y'),
-            'visiteur' => $visite->getVisiteur()?->getNom(),
-            'praticien' => $visite->getPraticien()?->getNom() . ' ' . $visite->getPraticien()?->getPrenom(),
+            'visiteur' => $visite->getVisiteur()?->getNomVisiteur() . ' ' . $visite->getVisiteur()?->getPrenomVisiteur(),
+            'praticien' => $visite->getPraticien()?->getNomPraticien() . ' ' . $visite->getPraticien()?->getPrenomPraticien(),
             'echantillons' => $this->formatEchantillons($visite),
             'bilan' => $visite->getBilan() ?: 'Aucun bilan renseigné',
             'logo_url' => $logoUrl, 
@@ -455,7 +455,7 @@ class VisiteurController extends AbstractController
         $echantillons = [];
         foreach ($visite->getPropositions() as $proposition) {
             $medicament = $proposition->getMedicament();
-            $quantite = $proposition->getQuantite();
+            $quantite = $proposition->getNbEchantillon();
             if ($medicament) {
                 $echantillons[] = $quantite . ' échantillon(s) de ' . $medicament->getLibelle();
             }
