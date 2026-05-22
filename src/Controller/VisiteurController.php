@@ -64,22 +64,22 @@ class VisiteurController extends AbstractController
     /**
      * Voir un de ses comptes-rendus - GET /api/visiteur/visites/{id}
      */
-    #[Route('/visites/{id}', name: 'api_visiteur_visite_show', methods: ['GET'])]
-    public function getMonCompteRendu(int $id, Request $request): JsonResponse
-    {
-        $visiteur = $this->getVisiteurFromRequest($request);
-        if (!$visiteur) {
-            return $this->json(['error' => 'Non authentifié'], 401);
-        }
+    // #[Route('/visites/{id}', name: 'api_visiteur_visite_show', methods: ['GET'])]
+    // public function getMonCompteRendu(int $id, Request $request): JsonResponse
+    // {
+    //     $visiteur = $this->getVisiteurFromRequest($request);
+    //     if (!$visiteur) {
+    //         return $this->json(['error' => 'Non authentifié'], 401);
+    //     }
 
-        $visite = $this->visiteRepository->findOneByVisiteurAndId($visiteur, $id);
-        if (!$visite) {
-            return $this->json(['error' => 'Visite non trouvée ou non autorisée'], 404);
-        }
+    //     $visite = $this->visiteRepository->findOneByVisiteurAndId($visiteur, $id);
+    //     if (!$visite) {
+    //         return $this->json(['error' => 'Visite non trouvée ou non autorisée'], 404);
+    //     }
 
-        $json = $this->serializer->serialize($visite, 'json', ['groups' => 'visite:read']);
-        return new JsonResponse($json, 200, [], true);
-    }
+    //     $json = $this->serializer->serialize($visite, 'json', ['groups' => 'visite:read']);
+    //     return new JsonResponse($json, 200, [], true);
+    // }
 
     /**
      * Ajouter une visite - POST /api/visiteur/visites
@@ -409,7 +409,7 @@ class VisiteurController extends AbstractController
         return $this->json(['praticiens' => $data]);
     }
 
-    #[Route('/visite/{id}/pdf', name: 'api_visite_pdf', methods: ['GET'])]
+    #[Route('/visites/{id}/pdf', name: 'api_visite_pdf', methods: ['GET'])]
     public function generatePdf(int $id, VisiteRepository $visiteRepository, Request $request): Response  
     {
         $visite = $visiteRepository->find($id);
@@ -421,12 +421,12 @@ class VisiteurController extends AbstractController
 
         $data = [
             'visite' => $visite,
-            'motifVisite' => $visite->getMotif(),
-            'dateVisite' => $visite->getDate()->format('d/m/Y'),
-            'visiteur' => $visite->getVisiteur()?->getNomVisiteur() . ' ' . $visite->getVisiteur()?->getPrenomVisiteur(),
+            'motifVisite' => $visite->getMotifVisite(),
+            'dateVisite' => $visite->getDateVisite()->format('d/m/Y'),
+            'visiteur' => $visite->getVisiteur()?->getNomVisiteur() . ' ' . $visite->getVisiteur()?->getNomVisiteur(),
             'praticien' => $visite->getPraticien()?->getNomPraticien() . ' ' . $visite->getPraticien()?->getPrenomPraticien(),
             'echantillons' => $this->formatEchantillons($visite),
-            'bilan' => $visite->getBilan() ?: 'Aucun bilan renseigné',
+            'bilan' => $visite->getBilanVisite() ?: 'Aucun bilan renseigné',
             'logo_url' => $logoUrl, 
         ];
 
@@ -446,7 +446,7 @@ class VisiteurController extends AbstractController
         // Retourner le PDF en réponse
         return new Response($dompdf->output(), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="compte_rendu_' . $visite->getId() . '.pdf"'
+            'Content-Disposition' => 'inline; filename="compte_rendu_' . $visite->getIdVisite() . '.pdf"'
         ]);
     }
 

@@ -37,25 +37,26 @@ class VisiteController extends AbstractController
 
     /**
      * Voir un compte rendu - GET /api/visites/{id}
+     * Ne renvoi pas de pdf : voir →  /api/visiteur/visite/1/pdf ! 
      */
-    #[Route('/visites/{id}', name: 'api_visite_show', methods: ['GET'])]
-    public function show(int $id): JsonResponse
-    {
-        $visite = $this->visiteRepository->find($id);
+    // #[Route('/visites/{id}', name: 'api_visite_show', methods: ['GET'])]
+    // public function show(int $id): JsonResponse
+    // {
+    //     $visite = $this->visiteRepository->find($id);
 
-        if (!$visite) {
-            return $this->json(['error' => 'Visite non trouvée'], 404);
-        }
+    //     if (!$visite) {
+    //         return $this->json(['error' => 'Visite non trouvée'], 404);
+    //     }
 
-        if ($visite->getCompteRendu()) {
-            return $this->json([
-                'visite' => json_decode($this->serializer->serialize($visite, 'json', ['groups' => 'visite:read']), true),
-                'pdf_url' => $visite->getCompteRendu(),
-                'has_pdf' => true
-            ]);
-        }
+    //     if ($visite->getCompteRenduVisite()) {
+    //         return $this->json([
+    //             'visite' => json_decode($this->serializer->serialize($visite, 'json', ['groups' => 'visite:read']), true),
+    //             'pdf_url' => $visite->getCompteRenduVisite(),
+    //             'has_pdf' => true
+    //         ]);
+    //     }
 
-        $json = $this->serializer->serialize($visite, 'json', ['groups' => 'visite:read']);
-        return new JsonResponse($json, 200, [], true);
-    }
+    //     $json = $this->serializer->serialize($visite, 'json', ['groups' => 'visite:read']);
+    //     return new JsonResponse($json, 200, [], true);
+    // }
 }

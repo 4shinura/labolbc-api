@@ -1,0 +1,29 @@
+[
+    {
+        "idVisite": 1,
+        "dateVisite": "2025-11-22T00:00:00+00:00",
+        "motifVisite": "Présentation du Doliprane brûlé",
+        "bilanVisite": "Préfère manger des têtes brûlées :(",
+        "compteRenduVisite": null,
+        "visiteur": {
+            "idVisiteur": 1,
+            "nomVisiteur": "VamichLab"
+        },
+        "praticien": {
+            "numeroSequentiel": 1,
+            "idPraticien": 2,
+            "nomPraticien": "Robert",
+            "prenomPraticien": "Axel"
+        },
+        "propositions": [
+            {
+                "idMedicament": "xxx",
+                "nb_echantillons": 4
+            },
+            {
+                "idMedicament": "xxx",
+                "nb_echantillons": 4
+            }
+        ]
+    }
+]
