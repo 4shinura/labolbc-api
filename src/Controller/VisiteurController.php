@@ -461,7 +461,7 @@ class VisiteurController extends AbstractController
         $echantillons = [];
         foreach ($visite->getPropositions() as $proposition) {
             $medicament = $proposition->getMedicament();
-            $quantite = $proposition->getNbEchantillon();
+            $quantite = $proposition->getNbEchantillons();
             if ($medicament) {
                 $echantillons[] = $quantite . ' échantillon(s) de ' . $medicament->getLibelle();
             }

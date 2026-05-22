@@ -45,15 +45,15 @@ class AppFixtures extends Fixture
         // PROFILS
         $profil1 = (new Profil())
             ->setEmail('admin1@example.com')
-            ->setPassword('$2y$10$4QWPguslKrE7wBDLjOYCVeLczQzYYWDMtVvUR2sWkNAyz/QEOz9MG')
+            ->setPassword('admin')
             ->setTypeProfil('admin');
         $profil2 = (new Profil())
             ->setEmail('visiteur1@example.com')
-            ->setPassword('$2y$10$uCA81ccLsSLh5bVpU8gW5ux8lX3Whz7MqCj0nEO.Vwu0AmisyNgeG')
+            ->setPassword('visiteur')
             ->setTypeProfil('visiteur');
         $profil3 = (new Profil())
             ->setEmail('responsable1@example.com')
-            ->setPassword('$2y$10$qq17H5GT30gfm/j.TtPeSuLIrKhfRl8twm.XeB.NBjKY9DBwJxj/6')
+            ->setPassword('responsable')
             ->setTypeProfil('responsable');
         $manager->persist($profil1);
         $manager->persist($profil2);

@@ -56,6 +56,7 @@ class Visite
     private ?Praticien $praticien = null;
 
     #[ORM\OneToMany(mappedBy: 'visite', targetEntity: Proposer::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
+    #[Groups(['visite:read', 'visite:list'])]
     private Collection $propositions;
 
     public function __construct()
