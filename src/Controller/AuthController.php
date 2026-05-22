@@ -143,7 +143,7 @@ class AuthController extends AbstractController
         $token = $this->authService->jwtGenerate([
             'user' => [
                 'id' => $profil->getIdProfil(),
-                'name' => $visiteur->getNomVisiteur(),
+                'name' => $visiteur ? $visiteur->getNomVisiteur() : null,
                 'email' => $profil->getEmail(),
                 'type' => $profil->getTypeProfil()
             ]
@@ -154,7 +154,7 @@ class AuthController extends AbstractController
             'token' => $token,
             'profil' => [
                 'id' => $profil->getIdProfil(),
-                'name' => $visiteur->getNomVisiteur(),
+                'name' => $visiteur ? $visiteur->getNomVisiteur() : null,
                 'email' => $profil->getEmail(),
                 'type' => $profil->getTypeProfil()
             ]
