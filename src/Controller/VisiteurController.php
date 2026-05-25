@@ -62,24 +62,24 @@ class VisiteurController extends AbstractController
     }
 
     /**
-     * Voir un de ses comptes-rendus - GET /api/visiteur/visites/{id}
+     * Voir une de ses visites - GET /api/visiteur/visites/{id}
      */
-    // #[Route('/visites/{id}', name: 'api_visiteur_visite_show', methods: ['GET'])]
-    // public function getMonCompteRendu(int $id, Request $request): JsonResponse
-    // {
-    //     $visiteur = $this->getVisiteurFromRequest($request);
-    //     if (!$visiteur) {
-    //         return $this->json(['error' => 'Non authentifié'], 401);
-    //     }
+    #[Route('/visites/{id}', name: 'api_visiteur_visite_show', methods: ['GET'])]
+    public function getMonCompteRendu(int $id, Request $request): JsonResponse
+    {
+        $visiteur = $this->getVisiteurFromRequest($request);
+        if (!$visiteur) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
 
-    //     $visite = $this->visiteRepository->findOneByVisiteurAndId($visiteur, $id);
-    //     if (!$visite) {
-    //         return $this->json(['error' => 'Visite non trouvée ou non autorisée'], 404);
-    //     }
+        $visite = $this->visiteRepository->findOneByVisiteurAndId($visiteur, $id);
+        if (!$visite) {
+            return $this->json(['error' => 'Visite non trouvée ou non autorisée'], 404);
+        }
 
-    //     $json = $this->serializer->serialize($visite, 'json', ['groups' => 'visite:read']);
-    //     return new JsonResponse($json, 200, [], true);
-    // }
+        $json = $this->serializer->serialize($visite, 'json', ['groups' => 'visite:read']);
+        return new JsonResponse($json, 200, [], true);
+    }
 
     /**
      * Ajouter une visite - POST /api/visiteur/visites
@@ -99,14 +99,14 @@ class VisiteurController extends AbstractController
         }
 
         $praticienData = $data['praticien'];
-        $specialite = $praticienData['specialite'] ?? null;
+        $specialite = $praticienData['specialitePraticien'] ?? null;
         $idPraticien = $praticienData['idPraticien'] ?? null;
 
         if (!$specialite || !$idPraticien) {
             return $this->json(['error' => 'specialite et id du praticien sont requis'], 400);
         }
 
-        $praticien = $this->praticienRepository->findOneBy(['specialite' => $specialite, 'idPraticien' => $idPraticien]);
+        $praticien = $this->praticienRepository->findOneBy(['specialitePraticien' => $specialite, 'idPraticien' => $idPraticien]);
         if (!$praticien) {
             return $this->json(['error' => 'Praticien non trouvé'], 404);
         }
@@ -238,7 +238,7 @@ class VisiteurController extends AbstractController
             $idPraticien = $praticienData['idPraticien'] ?? null;
 
             if ($specialite && $idPraticien) {
-                $newPraticien = $this->praticienRepository->findOneBy(['specialite' => $specialite, 'idPraticien' => $idPraticien]);
+                $newPraticien = $this->praticienRepository->findOneBy(['specialitePraticien' => $specialite, 'idPraticien' => $idPraticien]);
 
                 if ($newPraticien && ($newPraticien->getSpecialitePraticien() !== $oldPraticien->getSpecialitePraticien() || $newPraticien->getIdPraticien() !== $oldPraticien->getIdPraticien())) {
                     // Supprimer ancien répertoire
@@ -402,13 +402,13 @@ class VisiteurController extends AbstractController
         foreach ($praticiens as $praticien) {
             $specialite = $praticien->getSpecialitePraticien();
             $data[] = [
-                'specialite' => $specialite ? [
+                'specialitePraticien' => $specialite ? [
                     'numeroSequentiel' => $specialite->getNumeroSequentiel(),
                     'libelle' => $specialite->getLibelle(),
                 ] : null,
                 'idPraticien' => $praticien->getIdPraticien(),
-                'nom' => $praticien->getNomPraticien(),
-                'prenom' => $praticien->getPrenomPraticien()
+                'nomPraticien' => $praticien->getNomPraticien(),
+                'prenomPraticien' => $praticien->getPrenomPraticien()
             ];
         }
 
