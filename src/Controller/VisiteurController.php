@@ -240,7 +240,7 @@ class VisiteurController extends AbstractController
             if ($specialite && $idPraticien) {
                 $newPraticien = $this->praticienRepository->findOneBy(['specialite' => $specialite, 'idPraticien' => $idPraticien]);
 
-                if ($newPraticien && ($newPraticien->getSpecialite() !== $oldPraticien->getSpecialite() || $newPraticien->getIdPraticien() !== $oldPraticien->getIdPraticien())) {
+                if ($newPraticien && ($newPraticien->getSpecialitePraticien() !== $oldPraticien->getSpecialitePraticien() || $newPraticien->getIdPraticien() !== $oldPraticien->getIdPraticien())) {
                     // Supprimer ancien répertoire
                     $oldRepertorier = $this->repertorierRepository->findOneBy([
                         'visiteur' => $visiteur,
@@ -400,7 +400,7 @@ class VisiteurController extends AbstractController
 
         $data = [];
         foreach ($praticiens as $praticien) {
-            $specialite = $praticien->getSpecialite();
+            $specialite = $praticien->getSpecialitePraticien();
             $data[] = [
                 'specialite' => $specialite ? [
                     'numeroSequentiel' => $specialite->getNumeroSequentiel(),
