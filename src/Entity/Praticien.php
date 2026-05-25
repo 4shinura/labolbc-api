@@ -16,7 +16,7 @@ class Praticien
 {
     #[ORM\Id]
     #[ORM\Column(name: 'numeroSequentiel', type: 'integer')]
-    #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
+    #[Groups(['praticien:read'])]
     private ?int $numeroSequentiel = null;
 
     #[ORM\Id]
@@ -25,8 +25,9 @@ class Praticien
     private ?int $idPraticien = null;
 
     #[ORM\ManyToOne(targetEntity: Specialite::class, inversedBy: 'praticiens')]
+    #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
     #[ORM\JoinColumn(name: 'numeroSequentiel', referencedColumnName: 'numeroSequentiel')]
-    private ?Specialite $specialite = null;
+    private ?Specialite $specialitePraticien = null;
 
     #[ORM\Column(name: 'nomPraticien', length: 50, nullable: true)]
     #[Groups(['praticien:read', 'visite:read', 'visite:list'])]
@@ -62,8 +63,8 @@ class Praticien
     public function getIdPraticien(): ?int { return $this->idPraticien; }
     public function setIdPraticien(int $idPraticien): static { $this->idPraticien = $idPraticien; return $this; }
 
-    public function getSpecialite(): ?Specialite { return $this->specialite; }
-    public function setSpecialite(?Specialite $specialite): static { $this->specialite = $specialite; return $this; }
+    public function getSpecialitePraticien(): ?Specialite { return $this->specialitePraticien; }
+    public function setSpecialitePraticien(?Specialite $specialitePraticien): static { $this->specialitePraticien = $specialitePraticien; return $this; }
 
     public function getNomPraticien(): ?string { return $this->nomPraticien; }
     public function setNomPraticien(?string $nomPraticien): static { $this->nomPraticien = $nomPraticien; return $this; }

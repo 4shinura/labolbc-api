@@ -15,7 +15,7 @@ class Specialite
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'numeroSequentiel')]
-    #[Groups(['specialite:read', 'praticien:read'])]
+    #[Groups(['specialite:read', 'praticien:read', 'visite:read', 'visite:list'])]
     private ?int $numeroSequentiel = null;
 
     #[ORM\Column(length: 50)]
